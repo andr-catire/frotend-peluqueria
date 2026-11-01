@@ -15,7 +15,7 @@ async function checkHealth() {
     health.value = response.data;
   } catch {
     health.value = null;
-    error.value = 'No se pudo conectar con la API. Comprueba que el backend este iniciado.';
+    error.value = 'No se pudo conectar con la API. Comprueba que el backend esté iniciado.';
   } finally {
     loading.value = false;
   }
@@ -27,9 +27,9 @@ onMounted(checkHealth);
 <template>
   <main class="page-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Inicio - Sistema de Peluqueria">
+      <a class="brand" href="/" aria-label="Inicio - Sistema de Peluquería">
         <span class="brand-mark" aria-hidden="true">P</span>
-        <span>Sistema de Peluqueria</span>
+        <span>Sistema de Peluquería</span>
       </a>
       <span class="environment">DESARROLLO</span>
     </header>
@@ -39,7 +39,7 @@ onMounted(checkHealth);
       <div class="heading-row">
         <div>
           <h1 id="page-title">Estado del backend</h1>
-          <p class="subtitle">Comprobacion de la API de peluqueria</p>
+          <p class="subtitle">Comprobación de la API de peluquería</p>
         </div>
         <span
           class="status-badge"
@@ -48,7 +48,7 @@ onMounted(checkHealth);
           aria-live="polite"
         >
           <span class="status-dot"></span>
-          {{ loading ? 'Comprobando' : error ? 'Sin conexion' : 'En linea' }}
+          {{ loading ? 'Comprobando' : error ? 'Sin conexión' : 'En línea' }}
         </span>
       </div>
 
@@ -71,7 +71,7 @@ onMounted(checkHealth);
 
     <footer class="page-footer">
       <span>FRONTEND <i></i> API</span>
-      <span>Vue 3 / Express</span>
+      <span>Vue 3 / Spring Boot</span>
     </footer>
   </main>
 </template>
