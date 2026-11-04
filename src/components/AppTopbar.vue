@@ -1,0 +1,157 @@
+<script setup>
+import { Icon } from '@iconify/vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth.js';
+
+defineProps({
+  title: {
+    type: String,
+    default: '',
+  },
+});
+
+defineEmits(['toggle-sidebar']);
+
+const router = useRouter();
+const auth = useAuthStore();
+
+function cerrarSesion() {
+  auth.logout();
+  router.push({ name: 'login' });
+}
+</script>
+
+<template>
+  <header class="topbar">
+    <div class="topbar__left">
+      <button
+        class="btn btn--icon topbar__menu"
+        type="button"
+        aria-label="Abrir menú"
+        @click="$emit('toggle-sidebar')"
+      >
+        <Icon icon="material-symbols-light:menu" aria-hidden="true" />
+      </button>
+      <span class="topbar__title">{{ title }}</span>
+    </div>
+
+    <div class="topbar__right">
+      <div class="topbar__actions">
+        <slot name="actions" />
+      </div>
+
+      <div class="user">
+        <span class="user__initials" aria-hidden="true">{{ auth.iniciales }}</span>
+        <span class="user__meta">
+          <span class="user__name">{{ auth.nombre }}</span>
+          <span class="user__role">{{ auth.rolLabel }}</span>
+        </span>
+        <button class="btn btn--icon" type="button" aria-label="Cerrar sesión" @click="cerrarSesion">
+          <Icon icon="material-symbols-light:logout" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </header>
+</template>
+
+<style scoped>
+.topbar {
+  display: flex;
+  min-height: var(--topbar-h);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-bottom: var(--border-soft);
+  padding-inline: var(--space-6);
+  background: var(--color-paper-white);
+}
+
+.topbar__left,
+.topbar__right,
+.topbar__actions,
+.user {
+  display: flex;
+  align-items: center;
+}
+
+.topbar__left {
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.topbar__right {
+  gap: var(--space-4);
+}
+
+.topbar__title {
+  overflow: hidden;
+  font-size: var(--text-body);
+  font-weight: var(--weight-light);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__actions:empty {
+  display: none;
+}
+
+.topbar__menu {
+  display: none;
+  border-color: transparent;
+}
+
+.topbar :deep(svg) {
+  width: 20px;
+  height: 20px;
+}
+
+.user {
+  gap: var(--space-2);
+}
+
+.user__initials {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: var(--border-ink);
+  border-radius: var(--radius-base);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+}
+
+.user__meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.user__name {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+}
+
+.user__role {
+  color: var(--color-mist-gray);
+  font-size: var(--text-label);
+  font-weight: var(--weight-regular);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding-inline: var(--space-3);
+  }
+
+  .topbar__menu {
+    display: inline-flex;
+  }
+
+  .topbar__actions {
+    display: none;
+  }
+
+  .user__meta {
+    display: none;
+  }
+}
+</style>

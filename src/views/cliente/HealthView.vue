@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import api from '../../services/api.js';
+import { RouterLink } from 'vue-router';
+import { obtenerEstado } from '../../services/healthService.js';
 
 const health = ref(null);
 const loading = ref(true);
@@ -11,8 +12,13 @@ async function checkHealth() {
   error.value = '';
 
   try {
-    const response = await api.get('/health');
-    health.value = response.data;
+    const data = await obtenerEstado();
+
+    if (data?.status !== 'ok') {
+      throw new Error('Respuesta inesperada');
+    }
+
+    health.value = data;
   } catch {
     health.value = null;
     error.value = 'No se pudo conectar con la API. Comprueba que el backend esté iniciado.';
@@ -25,336 +31,218 @@ onMounted(checkHealth);
 </script>
 
 <template>
-  <main class="page-shell">
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="Inicio - Sistema de Peluquería">
-        <span class="brand-mark" aria-hidden="true">P</span>
-        <span>Sistema de Peluquería</span>
-      </a>
-      <span class="environment">DESARROLLO</span>
+  <main class="health-page">
+    <header class="health-topbar">
+      <RouterLink class="brand" :to="{ name: 'inicio' }" aria-label="Volver al inicio">
+        <span class="brand__mark" aria-hidden="true">P</span>
+        <span>Peluquería</span>
+      </RouterLink>
+      <span class="label">Diagnóstico</span>
     </header>
 
-    <section class="health-panel" aria-labelledby="page-title">
-      <div class="section-label"><span class="label-line"></span> CONECTIVIDAD</div>
-      <div class="heading-row">
-        <div>
-          <h1 id="page-title">Estado del backend</h1>
-          <p class="subtitle">Comprobación de la API de peluquería</p>
-        </div>
+    <section class="container health-panel" aria-labelledby="health-title">
+      <p class="section-label"><span class="section-label__line" aria-hidden="true"></span> Estado del sistema</p>
+      <h1 id="health-title">Estado del backend</h1>
+      <p class="health-subtitle">Comprobación de la API de peluquería.</p>
+
+      <div class="health-status" role="status" aria-live="polite">
         <span
-          class="status-badge"
-          :class="{ 'is-online': health && !loading, 'is-error': error, 'is-loading': loading }"
-          role="status"
-          aria-live="polite"
-        >
-          <span class="status-dot"></span>
-          {{ loading ? 'Comprobando' : error ? 'Sin conexión' : 'En línea' }}
-        </span>
+          class="health-status__dot"
+          :class="{
+            'is-online': health && !loading,
+            'is-error': error,
+            'is-loading': loading,
+          }"
+          aria-hidden="true"
+        ></span>
+        {{ loading ? 'Comprobando' : error ? 'Sin conexión' : 'En línea' }}
       </div>
 
-      <div class="result-area" aria-live="polite">
-        <div v-if="loading" class="result-message">Consultando /api/health...</div>
-        <div v-else-if="error" class="result-message error-message">{{ error }}</div>
-        <div v-else class="response-row">
-          <span class="response-key">Respuesta</span>
+      <div class="health-result" aria-live="polite">
+        <p v-if="loading" class="health-message">Consultando /api/health...</p>
+        <p v-else-if="error" class="form-error" role="alert">{{ error }}</p>
+        <div v-else class="health-response">
+          <span class="health-response__key">Respuesta</span>
           <code>{ "status": "{{ health.status }}" }</code>
         </div>
       </div>
 
-      <div class="panel-footer">
-        <span class="endpoint"><span class="endpoint-method">GET</span> localhost:3000/api/health</span>
-        <button type="button" :disabled="loading" @click="checkHealth">
+      <div class="health-actions">
+        <span class="health-endpoint"><span class="label">GET</span> /api/health</span>
+        <button class="btn btn--primary" type="button" :disabled="loading" @click="checkHealth">
           {{ loading ? 'Consultando...' : 'Comprobar de nuevo' }}
         </button>
       </div>
     </section>
 
-    <footer class="page-footer">
-      <span>FRONTEND <i></i> API</span>
-      <span>Vue 3 / Spring Boot</span>
+    <footer class="container health-footer">
+      <RouterLink :to="{ name: 'inicio' }">Volver al inicio</RouterLink>
+      <span class="caption">Vue 3 / Spring Boot</span>
     </footer>
   </main>
 </template>
 
-<style>
-:root {
-  font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif;
-  color: #202a27;
-  background: #f2f4ef;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  background-image: linear-gradient(135deg, rgb(229 236 224 / 70%), transparent 42%),
-    repeating-linear-gradient(0deg, transparent, transparent 39px, rgb(48 75 62 / 4%) 40px);
-}
-
-button,
-a {
-  font: inherit;
-}
-
-.page-shell {
+<style scoped>
+.health-page {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  padding: 0 7.2vw;
+  background: var(--color-paper-white);
 }
 
-.topbar {
+.health-topbar {
   display: flex;
-  min-height: 76px;
+  width: min(100% - 32px, var(--page-max));
+  min-height: var(--topbar-h);
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #d9dfd6;
+  margin-inline: auto;
+  border-bottom: var(--border-soft);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
-  color: inherit;
-  font-size: 14px;
-  font-weight: 650;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
   text-decoration: none;
 }
 
-.brand-mark {
+.brand__mark {
   display: grid;
-  width: 29px;
+  width: 28px;
   aspect-ratio: 1;
   place-items: center;
-  background: #275c49;
-  color: #f7f7f0;
-  font-family: Georgia, serif;
-  font-size: 18px;
-}
-
-.environment,
-.section-label,
-.page-footer,
-.endpoint-method {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.environment {
-  color: #65746b;
+  border: var(--border-ink);
+  border-radius: var(--radius-base);
+  background: var(--color-powder-blue);
+  font-size: var(--text-body-lg);
 }
 
 .health-panel {
-  width: min(100%, 760px);
-  margin: auto;
-  padding: 44px 0 35px;
+  flex: 1;
+  padding-block: var(--space-12);
 }
 
 .section-label {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #52715f;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.label-line {
+.section-label__line {
   width: 24px;
   height: 1px;
-  background: #52715f;
+  background: currentColor;
 }
 
-.heading-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-top: 20px;
+.health-panel h1 {
+  font-size: var(--text-heading-lg);
+  line-height: 1.08;
 }
 
-h1 {
-  margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 400;
+.health-subtitle {
+  margin-top: var(--space-2);
+  color: var(--color-mist-gray);
 }
 
-.subtitle {
-  margin: 10px 0 0;
-  color: #68756d;
-  font-size: 14px;
-}
-
-.status-badge {
+.health-status {
   display: inline-flex;
-  flex: 0 0 auto;
   align-items: center;
-  gap: 8px;
-  padding: 8px 11px;
-  border: 1px solid #d1d8d0;
-  color: #647169;
-  font-size: 12px;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
 }
 
-.status-dot {
-  width: 7px;
-  aspect-ratio: 1;
+.health-status__dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--color-warm-ink);
   border-radius: 50%;
-  background: #a8b0aa;
 }
 
-.is-online .status-dot {
-  background: #36865d;
+.health-status__dot.is-online {
+  background: var(--color-warm-ink);
 }
 
-.is-error .status-dot {
-  background: #c25245;
+.health-status__dot.is-error {
+  border-style: dashed;
 }
 
-.is-loading .status-dot {
-  background: #bc8a31;
+.health-status__dot.is-loading {
+  border-style: dotted;
 }
 
-.result-area {
+.health-result {
+  max-width: 640px;
+  margin-top: var(--space-4);
+}
+
+.health-message {
+  color: var(--color-mist-gray);
+}
+
+.health-response {
   display: flex;
-  min-height: 104px;
-  align-items: center;
-  margin-top: 31px;
-  padding: 24px;
-  border-left: 3px solid #43815f;
-  background: #fff;
-}
-
-.result-message {
-  color: #66736b;
-  font-size: 14px;
-}
-
-.error-message {
-  color: #a43d34;
-}
-
-.response-row {
-  display: flex;
-  width: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border: var(--border-soft);
+  border-radius: var(--radius-base);
 }
 
-.response-key {
-  color: #65736a;
-  font-size: 13px;
+.health-response__key {
+  color: var(--color-mist-gray);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
 }
 
 code {
-  padding: 9px 12px;
-  background: #eff4ed;
-  color: #285b43;
-  font-size: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--text-caption);
 }
 
-.panel-footer {
+.health-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin-top: 18px;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
 }
 
-.endpoint {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: #68756d;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 12px;
+.health-endpoint {
+  color: var(--color-mist-gray);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
 }
 
-.endpoint-method {
-  color: #28704d;
-}
-
-button {
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid #275c49;
-  background: #275c49;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 150ms ease;
-}
-
-button:hover:not(:disabled) {
-  background: #1f4939;
-}
-
-button:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
-.page-footer {
+.health-footer {
   display: flex;
-  min-height: 55px;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #d9dfd6;
-  color: #778179;
-  font-weight: 500;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: var(--border-soft);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
 }
 
-.page-footer i {
-  display: inline-block;
-  width: 4px;
-  aspect-ratio: 1;
-  margin: 0 5px 2px;
-  border-radius: 50%;
-  background: #43815f;
-}
-
-@media (max-width: 560px) {
-  .page-shell {
-    padding: 0 22px;
+@media (max-width: 768px) {
+  .health-panel {
+    padding-block: var(--space-6);
   }
 
-  .topbar {
-    min-height: 65px;
-  }
-
-  .brand {
-    font-size: 12px;
-  }
-
-  .heading-row,
-  .panel-footer {
-    align-items: flex-start;
+  .health-actions {
+    align-items: stretch;
     flex-direction: column;
-  }
-
-  .heading-row {
-    gap: 17px;
-  }
-
-  .result-area {
-    min-height: 92px;
-    padding: 18px;
-  }
-
-  .response-row {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .panel-footer {
-    gap: 14px;
   }
 }
 </style>
