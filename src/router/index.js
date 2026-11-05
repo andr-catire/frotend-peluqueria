@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth.js';
 import EnConstruccionView from '../views/EnConstruccionView.vue';
+import ServiciosAdminView from '../views/admin/ServiciosAdminView.vue';
 import HealthView from '../views/cliente/HealthView.vue';
 
 const routes = [
@@ -53,7 +54,7 @@ const routes = [
   {
     path: '/admin/servicios',
     name: 'admin-servicios',
-    component: EnConstruccionView,
+    component: ServiciosAdminView,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Servicios' },
   },
   {

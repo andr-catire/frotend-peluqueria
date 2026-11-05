@@ -86,7 +86,11 @@ async function activarFoco() {
 
   await nextTick();
   const elementos = enfocables();
-  (elementos[0] ?? panel.value)?.focus();
+  const cuerpo = panel.value?.querySelector('.modal__body');
+  const primerCampo = cuerpo?.querySelector(
+    'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+  );
+  (primerCampo ?? elementos[0] ?? panel.value)?.focus();
 }
 
 function desactivarFoco() {

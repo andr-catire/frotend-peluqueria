@@ -104,7 +104,11 @@ function clave(fila, indice) {
         v-if="!loading && !rows.length"
         :title="emptyTitle"
         :description="emptyDescription"
-      />
+      >
+        <template v-if="$slots['empty-action']" #action>
+          <slot name="empty-action" />
+        </template>
+      </EmptyState>
     </template>
   </div>
 </template>
