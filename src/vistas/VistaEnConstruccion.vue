@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import PageHeader from '../components/PageHeader.vue';
-import EmptyState from '../components/EmptyState.vue';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import EstadoVacio from '../componentes/EstadoVacio.vue';
 
 const route = useRoute();
 
@@ -45,22 +45,22 @@ const icono = computed(() => {
 
 <template>
   <div v-if="esAuth" class="auth-placeholder">
-    <EmptyState :title="titulo" :description="mensaje" :icon="icono">
+    <EstadoVacio :title="titulo" :description="mensaje" :icon="icono">
       <template #action>
         <RouterLink class="btn btn--ghost" :to="{ name: 'inicio' }">Volver al inicio</RouterLink>
       </template>
-    </EmptyState>
+    </EstadoVacio>
   </div>
 
   <div v-else class="placeholder">
-    <PageHeader :label="etiqueta" :title="titulo" :subtitle="mensaje" />
+    <EncabezadoPagina :label="etiqueta" :title="titulo" :subtitle="mensaje" />
 
     <div class="container page">
-      <EmptyState :title="tituloVacio" :description="mensaje" :icon="icono">
+      <EstadoVacio :title="tituloVacio" :description="mensaje" :icon="icono">
         <template #action>
           <RouterLink class="btn btn--ghost" :to="{ name: 'inicio' }">Volver al inicio</RouterLink>
         </template>
-      </EmptyState>
+      </EstadoVacio>
     </div>
   </div>
 </template>

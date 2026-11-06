@@ -1,13 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import PageHeader from '../../components/PageHeader.vue';
-import StatCard from '../../components/StatCard.vue';
-import DataTable from '../../components/DataTable.vue';
-import ServicioFormModal from '../../components/ServicioFormModal.vue';
-import { listar } from '../../services/serviciosService.js';
-import { useConfigStore } from '../../stores/config.js';
+import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
+import TarjetaCifra from '../../componentes/TarjetaCifra.vue';
+import TablaDatos from '../../componentes/TablaDatos.vue';
+import ModalServicio from '../../componentes/ModalServicio.vue';
+import { listar } from '../../servicios/servicioServicios.js';
+import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
 
-const config = useConfigStore();
+const config = useAlmacenConfiguracion();
 
 const servicios = ref([]);
 const cargando = ref(true);
@@ -106,15 +106,15 @@ onMounted(cargarServicios);
 
 <template>
   <div class="servicios-admin">
-    <PageHeader
+    <EncabezadoPagina
       label="Gestión de servicios"
       title="Catálogo de servicios"
       subtitle="Crea los servicios que ofrece la peluquería y consulta su costo y duración."
     >
       <template #stats>
-        <StatCard :value="serviciosActivos" label="Servicios activos" />
+        <TarjetaCifra :value="serviciosActivos" label="Servicios activos" />
       </template>
-    </PageHeader>
+    </EncabezadoPagina>
 
     <div class="container page">
       <div class="toolbar">
@@ -137,7 +137,7 @@ onMounted(cargarServicios);
 
       <p v-if="mensajeExito" class="success-message" role="status">{{ mensajeExito }}</p>
 
-      <DataTable
+      <TablaDatos
         :columns="columnas"
         :rows="serviciosFiltrados"
         row-key="id"
@@ -158,10 +158,10 @@ onMounted(cargarServicios);
             Crear servicio
           </button>
         </template>
-      </DataTable>
+      </TablaDatos>
     </div>
 
-    <ServicioFormModal
+    <ModalServicio
       :open="modalAbierto"
       @close="modalAbierto = false"
       @creado="alCrear"

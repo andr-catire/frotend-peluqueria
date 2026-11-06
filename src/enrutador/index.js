@@ -1,50 +1,50 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '../stores/auth.js';
-import EnConstruccionView from '../views/EnConstruccionView.vue';
-import ServiciosAdminView from '../views/admin/ServiciosAdminView.vue';
-import HealthView from '../views/cliente/HealthView.vue';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import VistaEnConstruccion from '../vistas/VistaEnConstruccion.vue';
+import VistaServiciosAdministracion from '../vistas/administracion/VistaServiciosAdministracion.vue';
+import VistaSalud from '../vistas/cliente/VistaSalud.vue';
 
 const routes = [
   {
     path: '/login',
     name: 'login',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'auth', guestOnly: true, title: 'Iniciar sesión' },
   },
   {
     path: '/registro',
     name: 'registro',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'auth', guestOnly: true, title: 'Crear cuenta' },
   },
   {
     path: '/',
     name: 'inicio',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', title: 'Inicio' },
   },
   {
     path: '/servicios',
     name: 'servicios',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', title: 'Servicios' },
   },
   {
     path: '/agendar',
     name: 'agendar',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Agendar cita' },
   },
   {
     path: '/mis-citas',
     name: 'mis-citas',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Mis citas' },
   },
   {
     path: '/perfil',
     name: 'perfil',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Mi perfil' },
   },
   {
@@ -54,37 +54,37 @@ const routes = [
   {
     path: '/admin/servicios',
     name: 'admin-servicios',
-    component: ServiciosAdminView,
+    component: VistaServiciosAdministracion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Servicios' },
   },
   {
     path: '/admin/personal',
     name: 'admin-personal',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Personal' },
   },
   {
     path: '/admin/asistencia',
     name: 'admin-asistencia',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Asistencia' },
   },
   {
     path: '/no-autorizado',
     name: 'no-autorizado',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'blank', title: 'Acceso restringido' },
   },
   {
     path: '/estado',
     name: 'estado',
-    component: HealthView,
+    component: VistaSalud,
     meta: { layout: 'blank', title: 'Estado del backend' },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'no-encontrado',
-    component: EnConstruccionView,
+    component: VistaEnConstruccion,
     meta: { layout: 'blank', title: 'Página no encontrada' },
   },
 ];
@@ -96,7 +96,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const auth = useAuthStore();
+  const auth = useAlmacenAutenticacion();
 
   if (to.meta.guestOnly && auth.estaAutenticado) {
     return auth.rutaInicio;

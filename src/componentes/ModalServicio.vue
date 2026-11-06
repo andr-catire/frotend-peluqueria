@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue';
-import FormModal from './FormModal.vue';
-import { crear } from '../services/serviciosService.js';
+import ModalFormulario from './ModalFormulario.vue';
+import { crear } from '../servicios/servicioServicios.js';
 
 const props = defineProps({
   open: {
@@ -132,7 +132,7 @@ async function guardar() {
 </script>
 
 <template>
-  <FormModal
+  <ModalFormulario
     :open="open"
     title="Crear servicio"
     submit-label="Crear servicio"
@@ -198,5 +198,5 @@ async function guardar() {
         {{ errorDuracion }}
       </p>
     </div>
-  </FormModal>
+  </ModalFormulario>
 </template>

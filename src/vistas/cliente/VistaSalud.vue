@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { obtenerEstado } from '../../services/healthService.js';
+import { obtenerEstado } from '../../servicios/servicioSalud.js';
 
 const health = ref(null);
 const loading = ref(true);

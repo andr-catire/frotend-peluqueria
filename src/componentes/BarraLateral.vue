@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { useAuthStore } from '../stores/auth.js';
-import { useConfigStore } from '../stores/config.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
 
 const props = defineProps({
   open: {
@@ -15,8 +15,8 @@ const props = defineProps({
 defineEmits(['close']);
 
 const route = useRoute();
-const auth = useAuthStore();
-const config = useConfigStore();
+const auth = useAlmacenAutenticacion();
+const config = useAlmacenConfiguracion();
 
 const nombreMarca = computed(() => config.nombre);
 

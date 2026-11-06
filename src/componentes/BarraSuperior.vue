@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 
 defineProps({
   title: {
@@ -13,7 +13,7 @@ defineProps({
 defineEmits(['toggle-sidebar']);
 
 const router = useRouter();
-const auth = useAuthStore();
+const auth = useAlmacenAutenticacion();
 
 function cerrarSesion() {
   auth.logout();

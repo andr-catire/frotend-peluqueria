@@ -2,13 +2,13 @@
 import { computed } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { useAuthStore } from '../stores/auth.js';
-import { useConfigStore } from '../stores/config.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
 
 const route = useRoute();
 const router = useRouter();
-const auth = useAuthStore();
-const config = useConfigStore();
+const auth = useAlmacenAutenticacion();
+const config = useAlmacenConfiguracion();
 
 const navItems = [
   { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },

@@ -17,7 +17,7 @@ function leerSesionGuardada() {
   }
 }
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
   const guardada = leerSesionGuardada();
 
   const token = ref(guardada?.token ?? '');

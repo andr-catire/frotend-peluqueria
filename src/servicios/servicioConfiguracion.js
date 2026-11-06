@@ -1,5 +1,5 @@
 import api from './api.js';
-import { configuracionMock } from './mocks/configuracion.js';
+import { configuracionMock } from './simulados/configuracion.js';
 
 const USAR_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 

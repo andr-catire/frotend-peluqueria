@@ -1,5 +1,5 @@
 <script setup>
-import EmptyState from './EmptyState.vue';
+import EstadoVacio from './EstadoVacio.vue';
 
 const props = defineProps({
   columns: {
@@ -100,7 +100,7 @@ function clave(fila, indice) {
         </tbody>
       </table>
 
-      <EmptyState
+      <EstadoVacio
         v-if="!loading && !rows.length"
         :title="emptyTitle"
         :description="emptyDescription"
@@ -108,7 +108,7 @@ function clave(fila, indice) {
         <template v-if="$slots['empty-action']" #action>
           <slot name="empty-action" />
         </template>
-      </EmptyState>
+      </EstadoVacio>
     </template>
   </div>
 </template>

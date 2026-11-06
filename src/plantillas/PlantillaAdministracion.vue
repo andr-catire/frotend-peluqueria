@@ -1,8 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import AppSidebar from '../components/AppSidebar.vue';
-import AppTopbar from '../components/AppTopbar.vue';
+import BarraLateral from '../componentes/BarraLateral.vue';
+import BarraSuperior from '../componentes/BarraSuperior.vue';
 
 const route = useRoute();
 const sidebarAbierto = ref(false);
@@ -11,14 +11,14 @@ const titulo = computed(() => route.meta.title || 'Panel');
 
 <template>
   <div class="admin-layout">
-    <AppSidebar :open="sidebarAbierto" @close="sidebarAbierto = false" />
+    <BarraLateral :open="sidebarAbierto" @close="sidebarAbierto = false" />
 
     <div class="admin-content">
-      <AppTopbar :title="titulo" @toggle-sidebar="sidebarAbierto = true">
+      <BarraSuperior :title="titulo" @toggle-sidebar="sidebarAbierto = true">
         <template #actions>
           <slot name="actions" />
         </template>
-      </AppTopbar>
+      </BarraSuperior>
 
       <main class="admin-main">
         <slot />

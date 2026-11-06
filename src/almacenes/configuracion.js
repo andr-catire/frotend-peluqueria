@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { obtenerConfiguracion } from '../services/configService.js';
+import { obtenerConfiguracion } from '../servicios/servicioConfiguracion.js';
 
-export const useConfigStore = defineStore('config', () => {
+export const useAlmacenConfiguracion = defineStore('configuracion', () => {
   const configuracion = ref(null);
   const cargando = ref(false);
   const error = ref('');

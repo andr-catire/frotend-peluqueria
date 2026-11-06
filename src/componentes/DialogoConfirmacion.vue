@@ -1,5 +1,5 @@
 <script setup>
-import FormModal from './FormModal.vue';
+import ModalFormulario from './ModalFormulario.vue';
 
 defineProps({
   open: {
@@ -32,7 +32,7 @@ defineEmits(['confirm', 'cancel']);
 </script>
 
 <template>
-  <FormModal
+  <ModalFormulario
     :open="open"
     :title="title"
     :submit-label="confirmLabel"
@@ -44,7 +44,7 @@ defineEmits(['confirm', 'cancel']);
     @submit="$emit('confirm')"
   >
     <p class="confirm-message">{{ message }}</p>
-  </FormModal>
+  </ModalFormulario>
 </template>
 
 <style scoped>
