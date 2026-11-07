@@ -49,8 +49,9 @@ defineEmits(['confirm', 'cancel']);
 
 <style scoped>
 .confirm-message {
-  font-size: var(--text-body);
-  font-weight: var(--weight-light);
-  line-height: 1.3;
+  color: var(--color-marino);
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-regular);
+  line-height: 1.6;
 }
 </style>

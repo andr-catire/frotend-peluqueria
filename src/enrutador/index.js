@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import VistaEnConstruccion from '../vistas/VistaEnConstruccion.vue';
 import VistaServiciosAdministracion from '../vistas/administracion/VistaServiciosAdministracion.vue';
+import VistaPersonalAdministracion from '../vistas/administracion/VistaPersonalAdministracion.vue';
 import VistaSalud from '../vistas/cliente/VistaSalud.vue';
 import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
 import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
-import VistaServicios from '../vistas/cliente/VistaServicios.vue';
-import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
 
 const routes = [
   {
@@ -24,18 +23,19 @@ const routes = [
   {
     path: '/',
     name: 'inicio',
-    redirect: { name: 'servicios' },
+    component: VistaEnConstruccion,
+    meta: { layout: 'cliente', title: 'Inicio' },
   },
   {
     path: '/servicios',
     name: 'servicios',
-    component: VistaServicios,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', title: 'Servicios' },
   },
   {
     path: '/agendar',
     name: 'agendar',
-    component: VistaAgendar,
+    component: VistaEnConstruccion,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Agendar cita' },
   },
   {
@@ -63,7 +63,7 @@ const routes = [
   {
     path: '/admin/personal',
     name: 'admin-personal',
-    component: VistaEnConstruccion,
+    component: VistaPersonalAdministracion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Personal' },
   },
   {

@@ -1,12 +1,8 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-// Fuentes autoalojadas: DM Serif Display (titulares) + DM Sans (texto)
 import '@fontsource/dm-serif-display/400.css';
 import '@fontsource/dm-serif-display/400-italic.css';
-import '@fontsource/dm-sans/400.css';
-import '@fontsource/dm-sans/500.css';
-import '@fontsource/dm-sans/600.css';
-import '@fontsource/dm-sans/700.css';
+import '@fontsource-variable/dm-sans';
 import './recursos/estilos/tokens.css';
 import './recursos/estilos/base.css';
 import './iconos.js';

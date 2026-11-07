@@ -7,7 +7,7 @@ import { RouterLink } from 'vue-router';
     <header class="auth-header">
       <RouterLink class="brand" :to="{ name: 'inicio' }" aria-label="Volver al inicio">
         <span class="brand__mark" aria-hidden="true">P</span>
-        <span class="brand__name">Peluquería</span>
+        <span>Peluquería</span>
       </RouterLink>
     </header>
 
@@ -22,11 +22,11 @@ import { RouterLink } from 'vue-router';
 </template>
 
 <style scoped>
-/* PlantillaAutenticacion — DESIGN §3.1 */
 .auth-layout {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  padding: var(--space-4);
   background: var(--color-fondo);
 }
 
@@ -34,9 +34,7 @@ import { RouterLink } from 'vue-router';
   display: flex;
   min-height: var(--topbar-h);
   align-items: center;
-  padding-inline: var(--space-6);
   border-bottom: var(--borde-suave);
-  background: var(--color-blanco);
 }
 
 .brand {
@@ -46,7 +44,6 @@ import { RouterLink } from 'vue-router';
   font-family: var(--fuente-titulo);
   font-size: 22px;
   font-weight: var(--weight-regular);
-  color: var(--color-marino);
   text-decoration: none;
 }
 
@@ -55,25 +52,22 @@ import { RouterLink } from 'vue-router';
   width: 32px;
   aspect-ratio: 1;
   place-items: center;
-  border: var(--borde-fuerte);
-  border-radius: var(--radio-sm);
+  border: var(--borde-suave);
+  border-radius: var(--radio-pill);
   background: var(--color-superficie);
-  font-size: var(--text-body-lg);
   color: var(--color-marino);
-}
-
-.brand__name {
-  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
 }
 
 .auth-main {
   display: flex;
-  width: min(100%, 480px);
+  width: min(100%, 440px);
   flex: 1;
   flex-direction: column;
   justify-content: center;
   margin-inline: auto;
-  padding: var(--space-8) var(--space-4);
+  padding-block: var(--space-8);
 }
 
 .auth-footer {
@@ -82,6 +76,5 @@ import { RouterLink } from 'vue-router';
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
   text-align: center;
-  border-top: var(--borde-suave);
 }
 </style>

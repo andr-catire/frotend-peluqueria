@@ -42,7 +42,7 @@ onMounted(checkHealth);
 
     <section class="container health-panel" aria-labelledby="health-title">
       <p class="section-label"><span class="section-label__line" aria-hidden="true"></span> Estado del sistema</p>
-      <h1 id="health-title">Estado del backend</h1>
+      <h1 id="health-title">Estado del <em class="acento">backend</em></h1>
       <p class="health-subtitle">Comprobación de la API de peluquería.</p>
 
       <div class="health-status" role="status" aria-live="polite">
@@ -87,7 +87,7 @@ onMounted(checkHealth);
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: var(--color-paper-white);
+  background: var(--color-fondo);
 }
 
 .health-topbar {
@@ -97,32 +97,35 @@ onMounted(checkHealth);
   align-items: center;
   justify-content: space-between;
   margin-inline: auto;
-  border-bottom: var(--border-soft);
+  border-bottom: var(--borde-suave);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: var(--weight-regular);
   text-decoration: none;
 }
 
 .brand__mark {
   display: grid;
-  width: 28px;
+  width: 32px;
   aspect-ratio: 1;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
-  font-size: var(--text-body-lg);
+  border: var(--borde-suave);
+  border-radius: var(--radio-pill);
+  background: var(--color-superficie);
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
 }
 
 .health-panel {
   flex: 1;
-  padding-block: var(--space-12);
+  padding-block: var(--space-16);
 }
 
 .section-label {
@@ -130,26 +133,29 @@ onMounted(checkHealth);
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
-  font-size: var(--text-label);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
+  color: var(--color-azul);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .section-label__line {
-  width: 24px;
+  width: 28px;
   height: 1px;
   background: currentColor;
 }
 
 .health-panel h1 {
   font-size: var(--text-heading-lg);
-  line-height: 1.08;
+  line-height: 1.1;
 }
 
 .health-subtitle {
   margin-top: var(--space-2);
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
 }
 
 .health-status {
@@ -157,19 +163,20 @@ onMounted(checkHealth);
   align-items: center;
   gap: var(--space-2);
   margin-top: var(--space-6);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  color: var(--color-marino);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
 }
 
 .health-status__dot {
   width: 8px;
   height: 8px;
-  border: 1px solid var(--color-warm-ink);
+  border: 1px solid var(--color-marino);
   border-radius: 50%;
 }
 
 .health-status__dot.is-online {
-  background: var(--color-warm-ink);
+  background: var(--color-marino);
 }
 
 .health-status__dot.is-error {
@@ -186,7 +193,7 @@ onMounted(checkHealth);
 }
 
 .health-message {
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
 }
 
 .health-response {
@@ -194,13 +201,14 @@ onMounted(checkHealth);
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3);
-  border: var(--border-soft);
-  border-radius: var(--radius-base);
+  padding: var(--space-4);
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-blanco);
 }
 
 .health-response__key {
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }
@@ -219,7 +227,7 @@ code {
 }
 
 .health-endpoint {
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }
@@ -230,14 +238,15 @@ code {
   justify-content: space-between;
   gap: var(--space-4);
   padding-block: var(--space-4);
-  border-top: var(--border-soft);
+  border-top: var(--borde-suave);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }
 
 @media (max-width: 768px) {
   .health-panel {
-    padding-block: var(--space-6);
+    padding-block: var(--space-8);
   }
 
   .health-actions {

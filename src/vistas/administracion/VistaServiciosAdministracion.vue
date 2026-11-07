@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from 'vue';
 import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
 import TarjetaCifra from '../../componentes/TarjetaCifra.vue';
-import TablaDatos from '../../componentes/TablaDatos.vue';
+import TarjetaServicio from '../../componentes/TarjetaServicio.vue';
+import EstadoVacio from '../../componentes/EstadoVacio.vue';
 import ModalServicio from '../../componentes/ModalServicio.vue';
 import { listar } from '../../servicios/servicioServicios.js';
 import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
@@ -15,12 +16,6 @@ const error = ref('');
 const busqueda = ref('');
 const modalAbierto = ref(false);
 const mensajeExito = ref('');
-
-const columnas = [
-  { key: 'nombre', label: 'Nombre' },
-  { key: 'duracionMinutos', label: 'Duración' },
-  { key: 'costo', label: 'Costo', align: 'right' },
-];
 
 const hayBusqueda = computed(() => busqueda.value.trim().length > 0);
 
@@ -86,10 +81,16 @@ function abrirModal() {
   modalAbierto.value = true;
 }
 
-async function alCrear() {
+function alCrear(servicio) {
   modalAbierto.value = false;
   mensajeExito.value = 'Servicio creado correctamente.';
-  await cargarServicios();
+  servicios.value = servicios.value.filter((existente) => existente.id !== servicio.id);
+  servicios.value.push(servicio);
+  ordenar();
+}
+
+function ordenar() {
+  servicios.value.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
 }
 
 onMounted(cargarServicios);
@@ -100,6 +101,7 @@ onMounted(cargarServicios);
     <EncabezadoPagina
       label="Gestión de servicios"
       title="Catálogo de servicios"
+      accent="servicios"
       subtitle="Crea los servicios que ofrece la peluquería y consulta su costo y duración."
     >
       <template #stats>
@@ -121,7 +123,6 @@ onMounted(cargarServicios);
           />
         </div>
 
-        <!-- Un solo botón primario por vista (DESIGN §4) -->
         <button class="btn btn--primary" type="button" @click="abrirModal">
           Crear servicio
         </button>
@@ -129,20 +130,38 @@ onMounted(cargarServicios);
 
       <p v-if="mensajeExito" class="success-message" role="status">{{ mensajeExito }}</p>
 
-      <TablaDatos
-        :columns="columnas"
-        :rows="serviciosFiltrados"
-        row-key="id"
-        caption="Servicios activos de la peluquería"
-        :loading="cargando"
-        :error="error"
-        :empty-title="tituloVacio"
-        :empty-description="descripcionVacia"
-        @retry="cargarServicios"
+      <div v-if="error" class="error-panel" role="alert">
+        <p>{{ error }}</p>
+        <button class="btn btn--ghost btn--small" type="button" @click="cargarServicios">
+          Reintentar
+        </button>
+      </div>
+
+      <div
+        v-else-if="cargando"
+        class="services-grid"
+        aria-busy="true"
+        aria-label="Cargando servicios"
       >
-        <template #cell-duracionMinutos="{ row }">{{ row.duracionMinutos }} min</template>
-        <template #cell-costo="{ row }">{{ formatearCosto(row.costo) }}</template>
-        <template #empty-action>
+        <div v-for="fila in 3" :key="fila" class="service-skeleton" aria-hidden="true"></div>
+      </div>
+
+      <div v-else-if="serviciosFiltrados.length" class="services-grid">
+        <TarjetaServicio
+          v-for="servicio in serviciosFiltrados"
+          :key="servicio.id"
+          :servicio="servicio"
+          :precio="formatearCosto(servicio.costo)"
+        />
+      </div>
+
+      <EstadoVacio
+        v-else
+        :title="tituloVacio"
+        :description="descripcionVacia"
+        icon="material-symbols-light:content-cut"
+      >
+        <template #action>
           <button v-if="hayBusqueda" class="btn btn--ghost" type="button" @click="busqueda = ''">
             Limpiar búsqueda
           </button>
@@ -150,7 +169,7 @@ onMounted(cargarServicios);
             Crear servicio
           </button>
         </template>
-      </TablaDatos>
+      </EstadoVacio>
     </div>
 
     <ModalServicio
@@ -164,6 +183,7 @@ onMounted(cargarServicios);
 <style scoped>
 .servicios-admin {
   min-height: calc(100vh - var(--topbar-h));
+  background: var(--color-fondo);
 }
 
 .toolbar {
@@ -178,16 +198,47 @@ onMounted(cargarServicios);
   width: min(100%, 360px);
 }
 
-/* Mensaje de éxito: sin rojo — uso de superficie y marino (DESIGN §2.3) */
 .success-message {
   margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
   border: var(--borde-suave);
   border-radius: var(--radio-sm);
-  background: var(--color-superficie);
+  background: var(--color-blanco);
   color: var(--color-marino);
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
+}
+
+.error-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 2px solid var(--color-marino);
+  border-radius: var(--radio-sm);
+  background: var(--color-blanco);
+  color: var(--color-marino);
+  font-size: var(--text-body);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.service-skeleton {
+  min-height: 168px;
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
@@ -202,6 +253,17 @@ onMounted(cargarServicios);
 
   .toolbar .btn {
     width: 100%;
+  }
+
+  .error-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .services-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

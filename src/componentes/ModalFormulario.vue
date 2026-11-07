@@ -176,10 +176,6 @@ function enviar() {
 </template>
 
 <style scoped>
-/* ModalFormulario — DESIGN §3.2 y §4
-   Velo rgba(13,43,82,.45), panel blanco, radio 20 px, sin sombra.
-   Título serifa 28 px. Foco atrapado + Esc.
-*/
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -188,7 +184,7 @@ function enviar() {
   overflow-y: auto;
   place-items: center;
   padding: var(--space-4);
-  background: rgba(13, 43, 82, 0.45);
+  background: color-mix(in srgb, var(--color-marino) 45%, transparent);
 }
 
 .modal__panel {
@@ -199,7 +195,7 @@ function enviar() {
   border: var(--borde-suave);
   border-radius: var(--radio-lg);
   background: var(--color-blanco);
-  /* Sin sombra: separado del fondo por borde y velo */
+  transition: transform var(--dur-base) var(--ease-out);
 }
 
 .modal__panel--sm {
@@ -211,26 +207,17 @@ function enviar() {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
 }
 
 .modal__header {
   justify-content: space-between;
   border-bottom: var(--borde-suave);
-  padding: var(--space-4) var(--space-6);
 }
 
-/* Título en serifa 28 px (DESIGN §3.2) */
 .modal__title {
-  font-family: var(--fuente-titulo);
-  font-size: 28px;
-  font-weight: var(--weight-regular);
-  color: var(--color-marino);
-  line-height: 1.1;
-}
-
-.modal__close {
-  border-color: transparent;
-  flex-shrink: 0;
+  font-size: var(--text-heading-sm);
+  line-height: 1.2;
 }
 
 .modal__close :deep(svg) {
@@ -256,11 +243,8 @@ function enviar() {
 .modal__footer {
   justify-content: flex-end;
   border-top: var(--borde-suave);
-  padding: var(--space-4) var(--space-6);
-  gap: var(--space-3);
 }
 
-/* Entrada: scale(0.97) + opacidad (DESIGN §2.6) */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity var(--dur-base) var(--ease-out);
@@ -279,13 +263,10 @@ function enviar() {
 @media (max-width: 768px) {
   .modal-overlay {
     padding: var(--space-3);
-    align-items: flex-end;
   }
 
   .modal__panel {
     max-height: 92vh;
-    width: 100%;
-    border-radius: var(--radio-lg) var(--radio-lg) 0 0;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup>
-import { useId } from 'vue';
+import { computed, useId } from 'vue';
 
-defineProps({
+const props = defineProps({
   label: {
     type: String,
     default: '',
@@ -14,26 +14,47 @@ defineProps({
     type: String,
     default: '',
   },
+  accent: {
+    type: String,
+    default: '',
+  },
 });
 
 const titleId = useId();
+
+const partes = computed(() => {
+  if (!props.accent) {
+    return { antes: props.title, acento: '', despues: '' };
+  }
+
+  const indice = props.title
+    .toLocaleLowerCase('es')
+    .indexOf(props.accent.toLocaleLowerCase('es'));
+
+  if (indice < 0) {
+    return { antes: props.title, acento: '', despues: '' };
+  }
+
+  return {
+    antes: props.title.slice(0, indice),
+    acento: props.title.slice(indice, indice + props.accent.length),
+    despues: props.title.slice(indice + props.accent.length),
+  };
+});
 </script>
 
 <template>
   <section class="page-header" :aria-labelledby="titleId">
     <div class="page-header__inner">
       <div class="page-header__text">
-        <!-- Etiqueta azul con línea de 28 px a la izquierda (DESIGN §2.4) -->
         <p v-if="label" class="page-header__label">
           <span class="page-header__line" aria-hidden="true"></span>
           {{ label }}
         </p>
-        <!-- Título en serifa 36 px (con una palabra en <em> si se quiere azul en cursiva) -->
-        <h1 :id="titleId" class="page-header__title">{{ title }}</h1>
+        <h1 :id="titleId" class="page-header__title">{{ partes.antes }}<em v-if="partes.acento" class="page-header__accent">{{ partes.acento }}</em>{{ partes.despues }}</h1>
         <p v-if="subtitle" class="page-header__subtitle">{{ subtitle }}</p>
       </div>
 
-      <!-- Bloque de cifras a la derecha -->
       <div v-if="$slots.stats" class="page-header__stats">
         <slot name="stats" />
       </div>
@@ -42,10 +63,6 @@ const titleId = useId();
 </template>
 
 <style scoped>
-/* EncabezadoPagina — DESIGN §3.2
-   Banda --color-superficie, etiqueta azul con línea,
-   título serifa 36 px, subtítulo gris, cifras a la derecha.
-*/
 .page-header {
   border-bottom: var(--borde-suave);
   background: var(--color-superficie);
@@ -56,7 +73,7 @@ const titleId = useId();
   width: min(100% - 32px, var(--page-max));
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-8);
   margin-inline: auto;
   padding-block: var(--space-8);
 }
@@ -65,55 +82,47 @@ const titleId = useId();
   min-width: 0;
 }
 
-/* Etiqueta: azul, 12/600, mayúsculas, espaciado 0.16em, línea 28 px */
 .page-header__label {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
-  font-family: var(--fuente-texto);
+  margin-bottom: var(--space-2);
+  color: var(--color-marino);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  /* Texto azul sobre superficie: NO cumple 4.18:1 → usar color-marino aquí.
-     La línea sí puede ser azul porque es decorativa (no texto). */
-  color: var(--color-marino);
 }
 
 .page-header__line {
   width: 28px;
-  height: 2px;
-  background: var(--color-azul);
-  flex-shrink: 0;
-  border-radius: 1px;
+  height: 1px;
+  background: currentColor;
 }
 
-/* Título: serifa 36 px. Usar <em> dentro del title si se quiere la palabra en cursiva azul. */
 .page-header__title {
-  font-family: var(--fuente-titulo);
-  font-size: 36px;
-  font-weight: var(--weight-regular);
-  color: var(--color-marino);
+  font-size: var(--text-heading);
   line-height: 1.1;
 }
 
-.page-header__title :deep(em) {
+.page-header__accent {
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
   font-style: italic;
-  color: var(--color-azul);
+  font-weight: inherit;
 }
 
 .page-header__subtitle {
   margin-top: var(--space-2);
   color: var(--color-texto-suave);
   font-size: var(--text-body);
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
-/* Bloque de cifras */
 .page-header__stats {
   display: flex;
   flex-shrink: 0;
+  flex-wrap: wrap;
   gap: var(--space-3);
 }
 
@@ -126,11 +135,7 @@ const titleId = useId();
   }
 
   .page-header__title {
-    font-size: 28px;
-  }
-
-  .page-header__stats {
-    flex-wrap: wrap;
+    font-size: var(--text-heading-sm);
   }
 }
 </style>

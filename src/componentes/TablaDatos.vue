@@ -114,17 +114,13 @@ function clave(fila, indice) {
 </template>
 
 <style scoped>
-/* TablaDatos — DESIGN §3.2
-   Encabezado 12/600 mayúsculas color texto-suave.
-   Filas: borde suave, sin cebrado, hover en superficie.
-   Contenedor: radio 16 px, borde suave, fondo blanco.
-*/
 .data-table {
   width: 100%;
   overflow-x: auto;
   border: var(--borde-suave);
   border-radius: var(--radio-md);
   background: var(--color-blanco);
+  padding: var(--space-4);
 }
 
 table {
@@ -132,38 +128,33 @@ table {
   border-collapse: collapse;
 }
 
-/* Encabezado: 12/600, mayúsculas, espaciado 0.08em, color texto suave */
 th {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3);
   border-bottom: var(--borde-suave);
-  font-family: var(--fuente-texto);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-texto-suave);
   text-align: left;
-  background: var(--color-blanco);
+  text-transform: uppercase;
 }
 
 td {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3);
   border-bottom: var(--borde-suave);
+  color: var(--color-marino);
   font-size: var(--text-body);
   font-weight: var(--weight-regular);
-  color: var(--color-marino);
 }
 
 tbody tr:last-child td {
-  border-bottom: none;
+  border-bottom: 0;
 }
 
-/* Hover: superficie (sin cebrado) */
 tbody tr:hover {
-  background: var(--color-superficie);
+  background: color-mix(in srgb, var(--color-superficie) 50%, transparent);
 }
 
-/* Skeleton de carga */
 .data-table__skeleton {
   display: block;
   width: 100%;
@@ -171,33 +162,29 @@ tbody tr:hover {
   height: 16px;
   border-radius: var(--radio-sm);
   background: var(--color-superficie);
-  animation: shimmer 1.4s var(--ease-out) infinite;
 }
 
-@keyframes shimmer {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Estado de error */
 .data-table__error {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-4);
-  border-radius: var(--radio-md);
-  background: var(--color-superficie);
-  border: var(--borde-fuerte);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  border: 2px solid var(--color-marino);
+  border-radius: var(--radio-sm);
   color: var(--color-marino);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
 }
 
 @media (max-width: 768px) {
+  .data-table {
+    padding: var(--space-2);
+  }
+
   th,
   td {
-    padding-inline: var(--space-3);
+    padding-inline: var(--space-2);
   }
 }
 </style>

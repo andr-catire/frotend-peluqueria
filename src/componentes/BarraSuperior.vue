@@ -55,10 +55,6 @@ function cerrarSesion() {
 </template>
 
 <style scoped>
-/* BarraSuperior — DESIGN §3.2
-   64 px, fondo blanco, borde inferior suave.
-   Iniciales en círculo con borde suave, nombre y rol en texto suave.
-*/
 .topbar {
   display: flex;
   min-height: var(--topbar-h);
@@ -89,10 +85,9 @@ function cerrarSesion() {
 
 .topbar__title {
   overflow: hidden;
-  font-family: var(--fuente-texto);
+  color: var(--color-marino);
   font-size: var(--text-body);
   font-weight: var(--weight-medium);
-  color: var(--color-texto-suave);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -103,7 +98,6 @@ function cerrarSesion() {
 
 .topbar__menu {
   display: none;
-  border-color: transparent;
 }
 
 .topbar :deep(svg) {
@@ -115,36 +109,34 @@ function cerrarSesion() {
   gap: var(--space-2);
 }
 
-/* Iniciales: círculo con borde suave (DESIGN §3.2) */
 .user__initials {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: var(--borde-suave);
-  border-radius: 50%;
-  background: var(--color-superficie);
-  font-family: var(--fuente-texto);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-semibold);
+  border-radius: var(--radio-pill);
+  background: var(--color-blanco);
   color: var(--color-marino);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
 }
 
 .user__meta {
   display: flex;
   flex-direction: column;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .user__name {
-  font-size: var(--text-caption);
+  color: var(--color-texto-suave);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
-  color: var(--color-marino);
 }
 
 .user__role {
   color: var(--color-texto-suave);
-  font-size: 11px;
+  font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }
 

@@ -41,6 +41,13 @@ const icono = computed(() => {
   if (esNoAutorizado.value) return 'material-symbols-light:close';
   return 'material-symbols-light:schedule';
 });
+
+const acento = computed(() => {
+  if (esNoEncontrado.value) return 'encontrada';
+  if (esNoAutorizado.value) return 'restringido';
+  if (titulo.value === 'En construcción') return 'construcción';
+  return '';
+});
 </script>
 
 <template>
@@ -53,7 +60,7 @@ const icono = computed(() => {
   </div>
 
   <div v-else class="placeholder">
-    <EncabezadoPagina :label="etiqueta" :title="titulo" :subtitle="mensaje" />
+    <EncabezadoPagina :label="etiqueta" :title="titulo" :accent="acento" :subtitle="mensaje" />
 
     <div class="container page">
       <EstadoVacio :title="tituloVacio" :description="mensaje" :icon="icono">
@@ -67,12 +74,13 @@ const icono = computed(() => {
 
 <style scoped>
 .auth-placeholder {
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-paper-white);
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-blanco);
 }
 
 .placeholder {
   min-height: calc(100vh - var(--topbar-h));
+  background: var(--color-fondo);
 }
 </style>

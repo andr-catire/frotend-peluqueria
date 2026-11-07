@@ -13,20 +13,15 @@ defineProps({
 
 <template>
   <div class="stat-card">
-    <!-- Cifra en serifa 40 px (DESIGN §4) -->
     <span class="stat-card__value">{{ value }}</span>
     <span class="stat-card__label">{{ label }}</span>
   </div>
 </template>
 
 <style scoped>
-/* TarjetaCifra — DESIGN §4
-   Tarjeta blanca, borde suave, radio 16 px.
-   Número en serifa 40 px, leyenda en 12 px.
-*/
 .stat-card {
   display: flex;
-  min-width: 120px;
+  min-width: 128px;
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--space-4) var(--space-6);
@@ -36,11 +31,11 @@ defineProps({
 }
 
 .stat-card__value {
-  font-family: var(--fuente-titulo);
-  font-size: 40px;
-  font-weight: var(--weight-regular);
   color: var(--color-marino);
-  line-height: 1.08;
+  font-family: var(--fuente-titulo);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+  line-height: 1.1;
 }
 
 .stat-card__label {

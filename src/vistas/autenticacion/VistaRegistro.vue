@@ -1,18 +1,17 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
+import { registrar as registrarApi } from '../../servicios/servicioAutenticacion.js';
 
-const router = useRouter();
-
-const form = reactive({ nombre: '', email: '', password: '', confirmar: '' });
+const form = reactive({ nombre: '', email: '', password: '', confirmar: '', cedula: '', telefono: '' });
 const cargando = ref(false);
 const error = ref('');
 const paso = ref(1); // 1 = datos, 2 = éxito
 
 async function registrar() {
   error.value = '';
-  if (!form.nombre || !form.email || !form.password || !form.confirmar) {
+  if (!form.nombre || !form.email || !form.password || !form.confirmar || !form.cedula || !form.telefono) {
     error.value = 'Por favor completa todos los campos.';
     return;
   }
@@ -26,11 +25,16 @@ async function registrar() {
   }
   cargando.value = true;
   try {
-    // Simulación de registro
-    await new Promise(r => setTimeout(r, 1000));
+    await registrarApi({
+      nombre: form.nombre.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      cedula: form.cedula.trim(),
+      telefono: form.telefono.trim(),
+    });
     paso.value = 2;
   } catch (e) {
-    error.value = e.message || 'Error al crear la cuenta. Intenta de nuevo.';
+    error.value = e?.response?.data?.message || e?.message || 'Error al crear la cuenta. Intenta de nuevo.';
   } finally {
     cargando.value = false;
   }
@@ -104,6 +108,32 @@ async function registrar() {
                 type="email"
                 autocomplete="email"
                 placeholder="tu@correo.com"
+                :disabled="cargando"
+              />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="reg-cedula">Cédula</label>
+              <input
+                id="reg-cedula"
+                v-model="form.cedula"
+                class="input"
+                type="text"
+                autocomplete="off"
+                placeholder="V-12345678"
+                :disabled="cargando"
+              />
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="reg-telefono">Teléfono</label>
+              <input
+                id="reg-telefono"
+                v-model="form.telefono"
+                class="input"
+                type="tel"
+                autocomplete="tel"
+                placeholder="0414-1234567"
                 :disabled="cargando"
               />
             </div>

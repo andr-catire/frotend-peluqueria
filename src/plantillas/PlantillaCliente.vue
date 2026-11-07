@@ -62,7 +62,7 @@ function cerrarSesion() {
               Salir
             </button>
           </template>
-          <RouterLink v-else class="btn btn--outline btn--small" :to="{ name: 'login' }">
+          <RouterLink v-else class="btn btn--ghost btn--small" :to="{ name: 'login' }">
             Iniciar sesión
           </RouterLink>
         </div>
@@ -73,7 +73,6 @@ function cerrarSesion() {
       <slot />
     </main>
 
-    <!-- Navegación inferior móvil -->
     <nav class="bottom-nav" aria-label="Navegación móvil">
       <RouterLink
         v-for="item in navItems"
@@ -91,11 +90,6 @@ function cerrarSesion() {
 </template>
 
 <style scoped>
-/* PlantillaCliente — DESIGN §3.1
-   Cabecera: marca serifa 22 px, enlaces sans 500 16 px, activo con subrayado azul 2 px.
-   Pegajosa, borde inferior suave.
-   Móvil: barra inferior de pestañas.
-*/
 .cliente-layout {
   min-height: 100vh;
   background: var(--color-fondo);
@@ -114,7 +108,7 @@ function cerrarSesion() {
   width: min(100% - 32px, var(--page-max));
   min-height: var(--topbar-h);
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-8);
   margin-inline: auto;
 }
 
@@ -126,7 +120,6 @@ function cerrarSesion() {
   font-family: var(--fuente-titulo);
   font-size: 22px;
   font-weight: var(--weight-regular);
-  color: var(--color-marino);
   text-decoration: none;
 }
 
@@ -135,20 +128,20 @@ function cerrarSesion() {
   width: 32px;
   aspect-ratio: 1;
   place-items: center;
-  border: var(--borde-fuerte);
-  border-radius: var(--radio-sm);
+  border: var(--borde-suave);
+  border-radius: var(--radio-pill);
   background: var(--color-superficie);
-  font-size: var(--text-body-lg);
   color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-6);
 }
 
-/* Enlace activo: subrayado azul 2 px (DESIGN §3.1) */
 .nav__link {
   display: inline-flex;
   min-height: 44px;
@@ -159,58 +152,54 @@ function cerrarSesion() {
   font-size: var(--text-body-lg);
   font-weight: var(--weight-medium);
   text-decoration: none;
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out);
 }
 
-.nav__link:hover {
+.nav__link:hover,
+.nav__link.is-active {
   color: var(--color-marino);
   text-decoration: none;
 }
 
 .nav__link.is-active {
-  color: var(--color-marino);
   border-bottom-color: var(--color-azul);
   font-weight: var(--weight-semibold);
-  text-decoration: none;
 }
 
 .user {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin-left: auto;
 }
 
 .user__initials {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: var(--borde-suave);
-  border-radius: 50%;
-  background: var(--color-superficie);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-semibold);
+  border-radius: var(--radio-pill);
+  background: var(--color-blanco);
   color: var(--color-marino);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
 }
 
 .user__meta {
   display: flex;
   flex-direction: column;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .user__name {
-  font-size: var(--text-caption);
-  font-weight: var(--weight-medium);
   color: var(--color-marino);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
 }
 
 .user__role {
   color: var(--color-texto-suave);
-  font-size: 11px;
+  font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }
 
@@ -222,10 +211,10 @@ function cerrarSesion() {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .topbar__inner {
     width: min(100% - 24px, var(--page-max));
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
 
   .nav {
@@ -244,7 +233,7 @@ function cerrarSesion() {
   }
 
   .cliente-main {
-    padding-bottom: 64px;
+    padding-bottom: 72px;
   }
 
   .bottom-nav {
@@ -261,18 +250,15 @@ function cerrarSesion() {
 
   .bottom-nav__link {
     display: flex;
-    min-height: 56px;
+    min-height: 64px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 2px;
     color: var(--color-texto-suave);
-    font-size: 11px;
+    font-size: var(--text-caption);
     font-weight: var(--weight-regular);
     text-decoration: none;
-    transition:
-      color var(--dur-fast) var(--ease-out),
-      background var(--dur-fast) var(--ease-out);
   }
 
   .bottom-nav__link :deep(svg) {
@@ -283,7 +269,7 @@ function cerrarSesion() {
   .bottom-nav__link.is-active {
     background: var(--color-superficie);
     color: var(--color-marino);
-    font-weight: var(--weight-medium);
+    font-weight: var(--weight-semibold);
   }
 }
 </style>

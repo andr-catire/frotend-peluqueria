@@ -29,37 +29,31 @@ defineProps({
 </template>
 
 <style scoped>
-/* EstadoVacio — DESIGN §4
-   Obligatorio en todo componente que traiga datos.
-*/
 .empty-state {
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-12) var(--space-4);
+  padding: var(--space-16) var(--space-4);
   text-align: center;
 }
 
 .empty-state__icon {
-  width: 48px;
-  height: 48px;
-  color: var(--color-borde-medio);
+  width: 24px;
+  height: 24px;
+  color: var(--color-texto-suave);
 }
 
 .empty-state__title {
-  font-family: var(--fuente-titulo);
-  font-size: 28px;
-  font-weight: var(--weight-regular);
-  color: var(--color-marino);
-  line-height: 1.1;
+  font-size: var(--text-heading-sm);
+  line-height: 1.2;
 }
 
 .empty-state__description {
-  max-width: 48ch;
+  max-width: 52ch;
   color: var(--color-texto-suave);
-  font-size: var(--text-body);
-  line-height: 1.5;
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
 }
 
 .empty-state__action {
