@@ -102,8 +102,8 @@ function destino(item) {
   height: 100vh;
   flex-shrink: 0;
   flex-direction: column;
-  border-right: var(--border-soft);
-  background: var(--color-paper-white);
+  border-right: var(--borde-suave);
+  background: var(--color-blanco);
 }
 
 .sidebar__top {
@@ -111,7 +111,7 @@ function destino(item) {
   min-height: var(--topbar-h);
   align-items: center;
   justify-content: space-between;
-  border-bottom: var(--border-soft);
+  border-bottom: var(--borde-suave);
   padding-inline: var(--space-4);
 }
 
@@ -119,26 +119,28 @@ function destino(item) {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: var(--weight-regular);
   text-decoration: none;
 }
 
 .brand__mark {
   display: grid;
-  width: 28px;
+  width: 32px;
   aspect-ratio: 1;
   flex-shrink: 0;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
-  font-size: var(--text-body-lg);
+  border: var(--borde-suave);
+  border-radius: var(--radio-pill);
+  background: var(--color-superficie);
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
 }
 
 .sidebar__close {
   display: none;
-  border-color: transparent;
 }
 
 .sidebar__close :deep(svg) {
@@ -149,6 +151,7 @@ function destino(item) {
 .sidebar__nav {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   padding-block: var(--space-2);
 }
 
@@ -157,23 +160,28 @@ function destino(item) {
   min-height: 44px;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-left: 2px solid transparent;
-  color: var(--color-warm-ink);
-  font-size: var(--text-body);
-  font-weight: var(--weight-light);
+  margin-inline: var(--space-2);
+  padding: var(--space-3);
+  border-left: 3px solid transparent;
+  border-radius: var(--radio-sm);
+  color: var(--color-marino);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
   text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
 }
 
 .nav-link:hover {
-  background: color-mix(in srgb, var(--color-powder-blue) 40%, transparent);
+  background: color-mix(in srgb, var(--color-superficie) 60%, transparent);
   text-decoration: none;
 }
 
 .nav-link.is-active {
-  border-left-color: var(--color-slate-bloom);
-  background: var(--color-powder-blue);
-  font-weight: var(--weight-medium);
+  border-left-color: var(--color-azul);
+  background: var(--color-superficie);
+  font-weight: var(--weight-semibold);
 }
 
 .nav-link :deep(svg) {
@@ -203,6 +211,7 @@ function destino(item) {
 
   .nav-link {
     justify-content: center;
+    margin-inline: var(--space-1);
     padding-inline: var(--space-2);
   }
 }
@@ -236,7 +245,8 @@ function destino(item) {
 
   .nav-link {
     justify-content: flex-start;
-    padding-inline: var(--space-4);
+    margin-inline: var(--space-2);
+    padding-inline: var(--space-3);
   }
 
   .sidebar__close {
@@ -252,7 +262,7 @@ function destino(item) {
     height: 100%;
     padding: 0;
     border: 0;
-    background: rgb(35 31 32 / 40%);
+    background: color-mix(in srgb, var(--color-marino) 45%, transparent);
   }
 }
 </style>

@@ -27,34 +27,37 @@ import { RouterLink } from 'vue-router';
   min-height: 100vh;
   flex-direction: column;
   padding: var(--space-4);
-  background: var(--color-paper-white);
+  background: var(--color-fondo);
 }
 
 .auth-header {
   display: flex;
   min-height: var(--topbar-h);
   align-items: center;
-  border-bottom: var(--border-soft);
+  border-bottom: var(--borde-suave);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: var(--weight-regular);
   text-decoration: none;
 }
 
 .brand__mark {
   display: grid;
-  width: 28px;
+  width: 32px;
   aspect-ratio: 1;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
-  font-size: var(--text-body-lg);
+  border: var(--borde-suave);
+  border-radius: var(--radio-pill);
+  background: var(--color-superficie);
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
 }
 
 .auth-main {
@@ -69,7 +72,7 @@ import { RouterLink } from 'vue-router';
 
 .auth-footer {
   padding-block: var(--space-4);
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
   text-align: center;

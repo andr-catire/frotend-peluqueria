@@ -117,6 +117,10 @@ function clave(fila, indice) {
 .data-table {
   width: 100%;
   overflow-x: auto;
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-blanco);
+  padding: var(--space-4);
 }
 
 table {
@@ -125,23 +129,30 @@ table {
 }
 
 th {
-  padding: var(--space-2) var(--space-3);
-  border-bottom: var(--border-soft);
-  font-size: var(--text-label);
-  font-weight: var(--weight-medium);
+  padding: var(--space-3);
+  border-bottom: var(--borde-suave);
+  color: var(--color-texto-suave);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.08em;
+  text-align: left;
   text-transform: uppercase;
 }
 
 td {
   padding: var(--space-3);
-  border-bottom: var(--border-soft);
+  border-bottom: var(--borde-suave);
+  color: var(--color-marino);
   font-size: var(--text-body);
-  font-weight: var(--weight-light);
+  font-weight: var(--weight-regular);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 tbody tr:hover {
-  background: color-mix(in srgb, var(--color-powder-blue) 40%, transparent);
+  background: color-mix(in srgb, var(--color-superficie) 50%, transparent);
 }
 
 .data-table__skeleton {
@@ -149,8 +160,8 @@ tbody tr:hover {
   width: 100%;
   min-width: 64px;
   height: 16px;
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
 }
 
 .data-table__error {
@@ -158,14 +169,19 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3);
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  font-size: var(--text-caption);
+  padding: var(--space-4);
+  border: 2px solid var(--color-marino);
+  border-radius: var(--radio-sm);
+  color: var(--color-marino);
+  font-size: var(--text-body);
   font-weight: var(--weight-regular);
 }
 
 @media (max-width: 768px) {
+  .data-table {
+    padding: var(--space-2);
+  }
+
   th,
   td {
     padding-inline: var(--space-2);

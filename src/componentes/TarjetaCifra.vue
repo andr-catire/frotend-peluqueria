@@ -21,23 +21,25 @@ defineProps({
 <style scoped>
 .stat-card {
   display: flex;
-  min-width: 116px;
+  min-width: 128px;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  border: var(--border-soft);
-  border-radius: var(--radius-base);
-  background: var(--color-paper-white);
+  padding: var(--space-4) var(--space-6);
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-blanco);
 }
 
 .stat-card__value {
-  font-size: var(--text-heading-lg);
-  font-weight: var(--weight-light);
-  line-height: 1.08;
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+  line-height: 1.1;
 }
 
 .stat-card__label {
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-caption);
   font-weight: var(--weight-regular);
 }

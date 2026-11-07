@@ -1,7 +1,7 @@
 <script setup>
-import { useId } from 'vue';
+import { computed, useId } from 'vue';
 
-defineProps({
+const props = defineProps({
   label: {
     type: String,
     default: '',
@@ -14,9 +14,33 @@ defineProps({
     type: String,
     default: '',
   },
+  accent: {
+    type: String,
+    default: '',
+  },
 });
 
 const titleId = useId();
+
+const partes = computed(() => {
+  if (!props.accent) {
+    return { antes: props.title, acento: '', despues: '' };
+  }
+
+  const indice = props.title
+    .toLocaleLowerCase('es')
+    .indexOf(props.accent.toLocaleLowerCase('es'));
+
+  if (indice < 0) {
+    return { antes: props.title, acento: '', despues: '' };
+  }
+
+  return {
+    antes: props.title.slice(0, indice),
+    acento: props.title.slice(indice, indice + props.accent.length),
+    despues: props.title.slice(indice + props.accent.length),
+  };
+});
 </script>
 
 <template>
@@ -27,7 +51,7 @@ const titleId = useId();
           <span class="page-header__line" aria-hidden="true"></span>
           {{ label }}
         </p>
-        <h1 :id="titleId" class="page-header__title">{{ title }}</h1>
+        <h1 :id="titleId" class="page-header__title">{{ partes.antes }}<em v-if="partes.acento" class="page-header__accent">{{ partes.acento }}</em>{{ partes.despues }}</h1>
         <p v-if="subtitle" class="page-header__subtitle">{{ subtitle }}</p>
       </div>
 
@@ -40,8 +64,8 @@ const titleId = useId();
 
 <style scoped>
 .page-header {
-  border-bottom: var(--border-soft);
-  background: var(--color-powder-blue);
+  border-bottom: var(--borde-suave);
+  background: var(--color-superficie);
 }
 
 .page-header__inner {
@@ -49,7 +73,7 @@ const titleId = useId();
   width: min(100% - 32px, var(--page-max));
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-8);
   margin-inline: auto;
   padding-block: var(--space-8);
 }
@@ -63,34 +87,43 @@ const titleId = useId();
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
-  font-size: var(--text-label);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
+  color: var(--color-marino);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .page-header__line {
-  width: 24px;
+  width: 28px;
   height: 1px;
   background: currentColor;
 }
 
 .page-header__title {
-  font-size: var(--text-heading-lg);
-  line-height: 1.08;
+  font-size: var(--text-heading);
+  line-height: 1.1;
+}
+
+.page-header__accent {
+  color: var(--color-marino);
+  font-family: var(--fuente-titulo);
+  font-style: italic;
+  font-weight: inherit;
 }
 
 .page-header__subtitle {
   margin-top: var(--space-2);
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-body);
-  line-height: 1.3;
+  line-height: 1.6;
 }
 
 .page-header__stats {
   display: flex;
   flex-shrink: 0;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
 
 @media (max-width: 768px) {
@@ -102,11 +135,7 @@ const titleId = useId();
   }
 
   .page-header__title {
-    font-size: var(--text-heading);
-  }
-
-  .page-header__stats {
-    flex-wrap: wrap;
+    font-size: var(--text-heading-sm);
   }
 }
 </style>

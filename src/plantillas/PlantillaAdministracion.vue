@@ -31,7 +31,7 @@ const titulo = computed(() => route.meta.title || 'Panel');
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--color-paper-white);
+  background: var(--color-fondo);
 }
 
 .admin-content {

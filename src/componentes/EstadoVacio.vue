@@ -33,27 +33,27 @@ defineProps({
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-12) var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-16) var(--space-4);
   text-align: center;
 }
 
 .empty-state__icon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-mist-gray);
+  width: 24px;
+  height: 24px;
+  color: var(--color-texto-suave);
 }
 
 .empty-state__title {
   font-size: var(--text-heading-sm);
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .empty-state__description {
-  max-width: 48ch;
-  color: var(--color-mist-gray);
-  font-size: var(--text-body);
-  line-height: 1.3;
+  max-width: 52ch;
+  color: var(--color-texto-suave);
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
 }
 
 .empty-state__action {

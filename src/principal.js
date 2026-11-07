@@ -1,6 +1,8 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import '@fontsource-variable/inter';
+import '@fontsource/dm-serif-display/400.css';
+import '@fontsource/dm-serif-display/400-italic.css';
+import '@fontsource-variable/dm-sans';
 import './recursos/estilos/tokens.css';
 import './recursos/estilos/base.css';
 import './iconos.js';

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 import ModalFormulario from './ModalFormulario.vue';
 import { crear } from '../servicios/servicioServicios.js';
 
@@ -12,15 +12,37 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'creado']);
 
+const MAX_IMAGEN = 10 * 1024 * 1024;
+const LADO_MAXIMO = 1600;
+
 const nombre = ref('');
 const descripcion = ref('');
 const costo = ref('');
 const duracion = ref('');
+const inputImagen = ref(null);
+const archivoImagen = ref(null);
+const vistaPrevia = ref('');
 const errorNombre = ref('');
 const errorCosto = ref('');
 const errorDuracion = ref('');
+const errorImagen = ref('');
 const mensajeError = ref('');
 const cargando = ref(false);
+const procesandoImagen = ref(false);
+
+function limpiarImagen() {
+  if (vistaPrevia.value) {
+    URL.revokeObjectURL(vistaPrevia.value);
+  }
+  vistaPrevia.value = '';
+  archivoImagen.value = null;
+  errorImagen.value = '';
+  procesandoImagen.value = false;
+
+  if (inputImagen.value) {
+    inputImagen.value.value = '';
+  }
+}
 
 function limpiar() {
   nombre.value = '';
@@ -31,6 +53,7 @@ function limpiar() {
   errorCosto.value = '';
   errorDuracion.value = '';
   mensajeError.value = '';
+  limpiarImagen();
 }
 
 watch(
@@ -40,10 +63,73 @@ watch(
   }
 );
 
+onBeforeUnmount(limpiarImagen);
+
 function cerrar() {
-  if (cargando.value) return;
+  if (cargando.value || procesandoImagen.value) return;
   limpiar();
   emit('close');
+}
+
+async function convertirAWebp(archivo) {
+  const bitmap = await createImageBitmap(archivo);
+
+  try {
+    const escala = Math.min(1, LADO_MAXIMO / Math.max(bitmap.width, bitmap.height));
+    const ancho = Math.max(1, Math.round(bitmap.width * escala));
+    const alto = Math.max(1, Math.round(bitmap.height * escala));
+    const lienzo = document.createElement('canvas');
+    lienzo.width = ancho;
+    lienzo.height = alto;
+
+    const contexto = lienzo.getContext('2d');
+    if (!contexto) {
+      throw new Error('No se pudo preparar la imagen.');
+    }
+
+    contexto.drawImage(bitmap, 0, 0, ancho, alto);
+
+    return await new Promise((resolve, reject) => {
+      lienzo.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error('No se pudo convertir la imagen.'))),
+        'image/webp',
+        0.85
+      );
+    });
+  } finally {
+    bitmap.close?.();
+  }
+}
+
+async function alSeleccionarImagen(evento) {
+  const archivo = evento.target.files?.[0];
+  limpiarImagen();
+
+  if (!archivo) {
+    return;
+  }
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+    errorImagen.value = 'Selecciona una imagen JPG, PNG o WEBP.';
+    return;
+  }
+
+  if (archivo.size > MAX_IMAGEN) {
+    errorImagen.value = 'La imagen no puede superar los 10 MB.';
+    return;
+  }
+
+  procesandoImagen.value = true;
+
+  try {
+    const webp = await convertirAWebp(archivo);
+    archivoImagen.value = webp;
+    vistaPrevia.value = URL.createObjectURL(webp);
+  } catch {
+    errorImagen.value = 'No se pudo procesar la imagen. Inténtalo con otra.';
+  } finally {
+    procesandoImagen.value = false;
+  }
 }
 
 function validar() {
@@ -91,6 +177,16 @@ function validar() {
     return false;
   }
 
+  if (errorImagen.value) {
+    document.getElementById('servicio-imagen')?.focus();
+    return false;
+  }
+
+  if (procesandoImagen.value) {
+    mensajeError.value = 'Espera a que termine de procesarse la imagen.';
+    return false;
+  }
+
   return true;
 }
 
@@ -104,12 +200,18 @@ async function guardar() {
   cargando.value = true;
 
   try {
-    const servicio = await crear({
+    const descripcionLimpia = descripcion.value.trim();
+    const datos = {
       nombre: nombreLimpio,
       costo: costoNumero,
       duracionMinutos: duracionNumero,
-      descripcion: descripcion.value.trim(),
-    });
+    };
+
+    if (descripcionLimpia) {
+      datos.descripcion = descripcionLimpia;
+    }
+
+    const servicio = await crear(datos, archivoImagen.value);
 
     emit('creado', servicio);
     limpiar();
@@ -119,12 +221,16 @@ async function guardar() {
     const mensaje = excepcion?.response?.data?.message;
 
     if (codigo === 'DUPLICATE') {
-      errorNombre.value = mensaje || 'El servicio ya existe.';
+      errorNombre.value = mensaje || 'Ya existe un servicio con ese nombre.';
       document.getElementById('servicio-nombre')?.focus();
     } else if (codigo === 'FORBIDDEN') {
       mensajeError.value = 'No tienes permisos para crear servicios.';
     } else if (codigo === 'UNAUTHORIZED') {
       mensajeError.value = 'Inicia sesión para continuar.';
+    } else if (codigo === 'FILE_TOO_LARGE') {
+      errorImagen.value = mensaje || 'La imagen supera el tamaño permitido.';
+    } else if (codigo === 'INVALID_IMAGE') {
+      errorImagen.value = mensaje || 'La imagen no es válida.';
     } else if (codigo === 'VALIDATION_ERROR') {
       mensajeError.value = mensaje || 'Revisa los datos del formulario.';
     } else {
@@ -141,7 +247,7 @@ async function guardar() {
     :open="open"
     title="Crear servicio"
     submit-label="Crear servicio"
-    :loading="cargando"
+    :loading="cargando || procesandoImagen"
     :error="mensajeError"
     @close="cerrar"
     @submit="guardar"
@@ -172,6 +278,32 @@ async function guardar() {
         maxlength="1000"
         placeholder="Detalle opcional del servicio"
       ></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="servicio-imagen">Imagen (opcional)</label>
+      <input
+        id="servicio-imagen"
+        ref="inputImagen"
+        class="input"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        :disabled="cargando || procesandoImagen"
+        :aria-invalid="Boolean(errorImagen)"
+        :aria-describedby="errorImagen
+          ? 'servicio-imagen-ayuda servicio-imagen-error'
+          : 'servicio-imagen-ayuda'"
+        @change="alSeleccionarImagen"
+      />
+      <p id="servicio-imagen-ayuda" class="field__help">
+        Se convierte a WebP (máximo 1600 px y 10 MB).
+      </p>
+      <p v-if="errorImagen" id="servicio-imagen-error" class="field__error">
+        {{ errorImagen }}
+      </p>
+      <div v-if="vistaPrevia" class="image-preview">
+        <img :src="vistaPrevia" alt="Vista previa de la imagen del servicio" />
+      </div>
     </div>
 
     <div class="field">
@@ -216,3 +348,17 @@ async function guardar() {
     </div>
   </ModalFormulario>
 </template>
+
+<style scoped>
+.image-preview {
+  margin-top: var(--space-2);
+}
+
+.image-preview img {
+  width: 100%;
+  max-height: 220px;
+  border: var(--borde-suave);
+  border-radius: var(--radio-sm);
+  object-fit: cover;
+}
+</style>

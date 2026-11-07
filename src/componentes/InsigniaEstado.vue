@@ -41,12 +41,13 @@ const config = computed(
 .status {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-warm-ink);
-  border-radius: var(--radius-base);
+  gap: var(--space-2);
+  padding: 4px var(--space-3);
+  border: 1px solid var(--color-marino);
+  border-radius: var(--radio-pill);
+  color: var(--color-marino);
   font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-medium);
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -55,7 +56,7 @@ const config = computed(
   width: 8px;
   height: 8px;
   flex-shrink: 0;
-  border: 1px solid currentColor;
+  border: 1.5px solid currentColor;
   border-radius: 50%;
 }
 
@@ -70,21 +71,23 @@ const config = computed(
 }
 
 .status--confirmada {
+  border-left: 3px solid var(--color-azul);
   border-style: solid;
 }
 
 .status--confirmada .status__mark {
-  background: var(--color-warm-ink);
+  background: var(--color-marino);
 }
 
 .status--completada {
-  background: var(--color-powder-blue);
+  border-color: var(--color-borde-suave);
+  background: var(--color-superficie-fuerte);
 }
 
 .status--cancelada {
-  border-color: var(--color-powder-blue);
+  border-color: var(--color-borde-suave);
   border-style: dashed;
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
 }
 
 .status--cancelada .status__text {
@@ -93,6 +96,6 @@ const config = computed(
 
 .status--desconocido {
   border-style: dashed;
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
 }
 </style>
