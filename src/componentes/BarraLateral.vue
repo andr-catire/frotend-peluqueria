@@ -94,6 +94,11 @@ function destino(item) {
 </template>
 
 <style scoped>
+/* BarraLateral — DESIGN §3.2
+   240 px fondo blanco, borde derecho suave.
+   Activo: fondo superficie, texto marino 600, radio 12 px, filete azul 3 px izq.
+   <1024 px solo iconos; <768 px panel deslizable.
+*/
 .sidebar {
   position: sticky;
   top: 0;
@@ -102,8 +107,8 @@ function destino(item) {
   height: 100vh;
   flex-shrink: 0;
   flex-direction: column;
-  border-right: var(--border-soft);
-  background: var(--color-paper-white);
+  border-right: var(--borde-suave);
+  background: var(--color-blanco);
 }
 
 .sidebar__top {
@@ -111,7 +116,7 @@ function destino(item) {
   min-height: var(--topbar-h);
   align-items: center;
   justify-content: space-between;
-  border-bottom: var(--border-soft);
+  border-bottom: var(--borde-suave);
   padding-inline: var(--space-4);
 }
 
@@ -119,21 +124,24 @@ function destino(item) {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: var(--weight-regular);
+  color: var(--color-marino);
   text-decoration: none;
 }
 
 .brand__mark {
   display: grid;
-  width: 28px;
+  width: 32px;
   aspect-ratio: 1;
   flex-shrink: 0;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
+  border: var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
   font-size: var(--text-body-lg);
+  color: var(--color-marino);
 }
 
 .sidebar__close {
@@ -150,6 +158,8 @@ function destino(item) {
   display: flex;
   flex-direction: column;
   padding-block: var(--space-2);
+  padding-inline: var(--space-2);
+  gap: 2px;
 }
 
 .nav-link {
@@ -157,23 +167,29 @@ function destino(item) {
   min-height: 44px;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-left: 2px solid transparent;
-  color: var(--color-warm-ink);
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid transparent;
+  border-radius: var(--radio-sm);
+  color: var(--color-texto-suave);
   font-size: var(--text-body);
-  font-weight: var(--weight-light);
+  font-weight: var(--weight-medium);
   text-decoration: none;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 .nav-link:hover {
-  background: color-mix(in srgb, var(--color-powder-blue) 40%, transparent);
+  background: var(--color-superficie);
+  color: var(--color-marino);
   text-decoration: none;
 }
 
 .nav-link.is-active {
-  border-left-color: var(--color-slate-bloom);
-  background: var(--color-powder-blue);
-  font-weight: var(--weight-medium);
+  border-left-color: var(--color-azul);
+  background: var(--color-superficie);
+  color: var(--color-marino);
+  font-weight: var(--weight-semibold);
 }
 
 .nav-link :deep(svg) {
@@ -186,6 +202,7 @@ function destino(item) {
   display: none;
 }
 
+/* <1024 px: solo iconos */
 @media (max-width: 1024px) {
   .sidebar {
     width: var(--sidebar-w-compact);
@@ -204,9 +221,11 @@ function destino(item) {
   .nav-link {
     justify-content: center;
     padding-inline: var(--space-2);
+    border-left: none;
   }
 }
 
+/* <768 px: panel deslizable */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -236,7 +255,12 @@ function destino(item) {
 
   .nav-link {
     justify-content: flex-start;
-    padding-inline: var(--space-4);
+    padding-inline: var(--space-3);
+    border-left: 3px solid transparent;
+  }
+
+  .nav-link.is-active {
+    border-left-color: var(--color-azul);
   }
 
   .sidebar__close {
@@ -252,7 +276,7 @@ function destino(item) {
     height: 100%;
     padding: 0;
     border: 0;
-    background: rgb(35 31 32 / 40%);
+    background: rgba(13, 43, 82, 0.45);
   }
 }
 </style>

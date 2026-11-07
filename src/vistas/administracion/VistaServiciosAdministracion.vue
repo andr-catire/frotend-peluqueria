@@ -121,6 +121,7 @@ onMounted(cargarServicios);
           />
         </div>
 
+        <!-- Un solo botón primario por vista (DESIGN §4) -->
         <button class="btn btn--primary" type="button" @click="abrirModal">
           Crear servicio
         </button>
@@ -177,14 +178,16 @@ onMounted(cargarServicios);
   width: min(100%, 360px);
 }
 
+/* Mensaje de éxito: sin rojo — uso de superficie y marino (DESIGN §2.3) */
 .success-message {
   margin-bottom: var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  border: var(--border-soft);
-  border-radius: var(--radius-base);
-  color: var(--color-warm-ink);
+  padding: var(--space-3) var(--space-4);
+  border: var(--borde-suave);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
+  color: var(--color-marino);
   font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-medium);
 }
 
 @media (max-width: 768px) {

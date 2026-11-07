@@ -3,36 +3,39 @@ import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import VistaEnConstruccion from '../vistas/VistaEnConstruccion.vue';
 import VistaServiciosAdministracion from '../vistas/administracion/VistaServiciosAdministracion.vue';
 import VistaSalud from '../vistas/cliente/VistaSalud.vue';
+import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
+import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
+import VistaServicios from '../vistas/cliente/VistaServicios.vue';
+import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
 
 const routes = [
   {
     path: '/login',
     name: 'login',
-    component: VistaEnConstruccion,
+    component: VistaLogin,
     meta: { layout: 'auth', guestOnly: true, title: 'Iniciar sesión' },
   },
   {
     path: '/registro',
     name: 'registro',
-    component: VistaEnConstruccion,
+    component: VistaRegistro,
     meta: { layout: 'auth', guestOnly: true, title: 'Crear cuenta' },
   },
   {
     path: '/',
     name: 'inicio',
-    component: VistaEnConstruccion,
-    meta: { layout: 'cliente', title: 'Inicio' },
+    redirect: { name: 'servicios' },
   },
   {
     path: '/servicios',
     name: 'servicios',
-    component: VistaEnConstruccion,
+    component: VistaServicios,
     meta: { layout: 'cliente', title: 'Servicios' },
   },
   {
     path: '/agendar',
     name: 'agendar',
-    component: VistaEnConstruccion,
+    component: VistaAgendar,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Agendar cita' },
   },
   {
@@ -117,7 +120,7 @@ router.beforeEach((to) => {
 });
 
 router.afterEach((to) => {
-  const titulo = to.meta.title ? `${to.meta.title} · Peluquería` : 'Peluquería';
+  const titulo = to.meta.title ? `${to.meta.title} · Armandeus` : 'Armandeus';
   document.title = titulo;
 });
 

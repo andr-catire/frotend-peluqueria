@@ -62,7 +62,7 @@ function cerrarSesion() {
               Salir
             </button>
           </template>
-          <RouterLink v-else class="btn btn--ghost btn--small" :to="{ name: 'login' }">
+          <RouterLink v-else class="btn btn--outline btn--small" :to="{ name: 'login' }">
             Iniciar sesión
           </RouterLink>
         </div>
@@ -73,6 +73,7 @@ function cerrarSesion() {
       <slot />
     </main>
 
+    <!-- Navegación inferior móvil -->
     <nav class="bottom-nav" aria-label="Navegación móvil">
       <RouterLink
         v-for="item in navItems"
@@ -90,17 +91,22 @@ function cerrarSesion() {
 </template>
 
 <style scoped>
+/* PlantillaCliente — DESIGN §3.1
+   Cabecera: marca serifa 22 px, enlaces sans 500 16 px, activo con subrayado azul 2 px.
+   Pegajosa, borde inferior suave.
+   Móvil: barra inferior de pestañas.
+*/
 .cliente-layout {
   min-height: 100vh;
-  background: var(--color-paper-white);
+  background: var(--color-fondo);
 }
 
 .topbar {
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: var(--border-soft);
-  background: var(--color-paper-white);
+  border-bottom: var(--borde-suave);
+  background: var(--color-blanco);
 }
 
 .topbar__inner {
@@ -117,20 +123,23 @@ function cerrarSesion() {
   flex-shrink: 0;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-family: var(--fuente-titulo);
+  font-size: 22px;
+  font-weight: var(--weight-regular);
+  color: var(--color-marino);
   text-decoration: none;
 }
 
 .brand__mark {
   display: grid;
-  width: 28px;
+  width: 32px;
   aspect-ratio: 1;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
-  background: var(--color-powder-blue);
+  border: var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
   font-size: var(--text-body-lg);
+  color: var(--color-marino);
 }
 
 .nav {
@@ -139,27 +148,32 @@ function cerrarSesion() {
   gap: var(--space-4);
 }
 
+/* Enlace activo: subrayado azul 2 px (DESIGN §3.1) */
 .nav__link {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
   padding-inline: var(--space-1);
   border-bottom: 2px solid transparent;
-  color: var(--color-mist-gray);
-  font-size: var(--text-body);
-  font-weight: var(--weight-light);
-  text-decoration: none;
-}
-
-.nav__link:hover,
-.nav__link.is-active {
-  color: var(--color-warm-ink);
-  text-decoration: none;
-}
-
-.nav__link.is-active {
-  border-bottom-color: var(--color-slate-bloom);
+  color: var(--color-texto-suave);
+  font-size: var(--text-body-lg);
   font-weight: var(--weight-medium);
+  text-decoration: none;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.nav__link:hover {
+  color: var(--color-marino);
+  text-decoration: none;
+}
+
+.nav__link.is-active {
+  color: var(--color-marino);
+  border-bottom-color: var(--color-azul);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
 }
 
 .user {
@@ -171,13 +185,15 @@ function cerrarSesion() {
 
 .user__initials {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   place-items: center;
-  border: var(--border-ink);
-  border-radius: var(--radius-base);
+  border: var(--borde-suave);
+  border-radius: 50%;
+  background: var(--color-superficie);
   font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-semibold);
+  color: var(--color-marino);
 }
 
 .user__meta {
@@ -188,12 +204,13 @@ function cerrarSesion() {
 
 .user__name {
   font-size: var(--text-caption);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-medium);
+  color: var(--color-marino);
 }
 
 .user__role {
-  color: var(--color-mist-gray);
-  font-size: var(--text-label);
+  color: var(--color-texto-suave);
+  font-size: 11px;
   font-weight: var(--weight-regular);
 }
 
@@ -238,8 +255,8 @@ function cerrarSesion() {
     z-index: 20;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    border-top: var(--border-soft);
-    background: var(--color-paper-white);
+    border-top: var(--borde-suave);
+    background: var(--color-blanco);
   }
 
   .bottom-nav__link {
@@ -249,10 +266,13 @@ function cerrarSesion() {
     justify-content: center;
     flex-direction: column;
     gap: 2px;
-    color: var(--color-mist-gray);
-    font-size: var(--text-label);
+    color: var(--color-texto-suave);
+    font-size: 11px;
     font-weight: var(--weight-regular);
     text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background var(--dur-fast) var(--ease-out);
   }
 
   .bottom-nav__link :deep(svg) {
@@ -261,8 +281,8 @@ function cerrarSesion() {
   }
 
   .bottom-nav__link.is-active {
-    background: var(--color-powder-blue);
-    color: var(--color-warm-ink);
+    background: var(--color-superficie);
+    color: var(--color-marino);
     font-weight: var(--weight-medium);
   }
 }

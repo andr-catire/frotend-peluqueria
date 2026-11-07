@@ -23,14 +23,17 @@ const titleId = useId();
   <section class="page-header" :aria-labelledby="titleId">
     <div class="page-header__inner">
       <div class="page-header__text">
+        <!-- Etiqueta azul con línea de 28 px a la izquierda (DESIGN §2.4) -->
         <p v-if="label" class="page-header__label">
           <span class="page-header__line" aria-hidden="true"></span>
           {{ label }}
         </p>
+        <!-- Título en serifa 36 px (con una palabra en <em> si se quiere azul en cursiva) -->
         <h1 :id="titleId" class="page-header__title">{{ title }}</h1>
         <p v-if="subtitle" class="page-header__subtitle">{{ subtitle }}</p>
       </div>
 
+      <!-- Bloque de cifras a la derecha -->
       <div v-if="$slots.stats" class="page-header__stats">
         <slot name="stats" />
       </div>
@@ -39,9 +42,13 @@ const titleId = useId();
 </template>
 
 <style scoped>
+/* EncabezadoPagina — DESIGN §3.2
+   Banda --color-superficie, etiqueta azul con línea,
+   título serifa 36 px, subtítulo gris, cifras a la derecha.
+*/
 .page-header {
-  border-bottom: var(--border-soft);
-  background: var(--color-powder-blue);
+  border-bottom: var(--borde-suave);
+  background: var(--color-superficie);
 }
 
 .page-header__inner {
@@ -58,39 +65,56 @@ const titleId = useId();
   min-width: 0;
 }
 
+/* Etiqueta: azul, 12/600, mayúsculas, espaciado 0.16em, línea 28 px */
 .page-header__label {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
-  font-size: var(--text-label);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+  font-family: var(--fuente-texto);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  /* Texto azul sobre superficie: NO cumple 4.18:1 → usar color-marino aquí.
+     La línea sí puede ser azul porque es decorativa (no texto). */
+  color: var(--color-marino);
 }
 
 .page-header__line {
-  width: 24px;
-  height: 1px;
-  background: currentColor;
+  width: 28px;
+  height: 2px;
+  background: var(--color-azul);
+  flex-shrink: 0;
+  border-radius: 1px;
 }
 
+/* Título: serifa 36 px. Usar <em> dentro del title si se quiere la palabra en cursiva azul. */
 .page-header__title {
-  font-size: var(--text-heading-lg);
-  line-height: 1.08;
+  font-family: var(--fuente-titulo);
+  font-size: 36px;
+  font-weight: var(--weight-regular);
+  color: var(--color-marino);
+  line-height: 1.1;
+}
+
+.page-header__title :deep(em) {
+  font-style: italic;
+  color: var(--color-azul);
 }
 
 .page-header__subtitle {
   margin-top: var(--space-2);
-  color: var(--color-mist-gray);
+  color: var(--color-texto-suave);
   font-size: var(--text-body);
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
+/* Bloque de cifras */
 .page-header__stats {
   display: flex;
   flex-shrink: 0;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 @media (max-width: 768px) {
@@ -102,7 +126,7 @@ const titleId = useId();
   }
 
   .page-header__title {
-    font-size: var(--text-heading);
+    font-size: 28px;
   }
 
   .page-header__stats {
