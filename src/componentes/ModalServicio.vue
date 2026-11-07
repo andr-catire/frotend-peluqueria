@@ -13,22 +13,24 @@ const props = defineProps({
 const emit = defineEmits(['close', 'creado']);
 
 const nombre = ref('');
+const descripcion = ref('');
 const costo = ref('');
 const duracion = ref('');
 const errorNombre = ref('');
 const errorCosto = ref('');
 const errorDuracion = ref('');
-const errorGeneral = ref('');
-const enviando = ref(false);
+const mensajeError = ref('');
+const cargando = ref(false);
 
 function limpiar() {
   nombre.value = '';
+  descripcion.value = '';
   costo.value = '';
   duracion.value = '';
   errorNombre.value = '';
   errorCosto.value = '';
   errorDuracion.value = '';
-  errorGeneral.value = '';
+  mensajeError.value = '';
 }
 
 watch(
@@ -39,7 +41,7 @@ watch(
 );
 
 function cerrar() {
-  if (enviando.value) return;
+  if (cargando.value) return;
   limpiar();
   emit('close');
 }
@@ -48,7 +50,7 @@ function validar() {
   errorNombre.value = '';
   errorCosto.value = '';
   errorDuracion.value = '';
-  errorGeneral.value = '';
+  mensajeError.value = '';
 
   const nombreLimpio = nombre.value.trim().replace(/\s+/g, ' ');
 
@@ -70,6 +72,8 @@ function validar() {
 
   if (!/^\d+$/.test(duracionTexto) || !Number.isFinite(duracionNumero) || duracionNumero <= 0) {
     errorDuracion.value = 'La duración debe ser un número entero de minutos mayor que 0.';
+  } else if (duracionNumero > 480) {
+    errorDuracion.value = 'La duración no puede superar los 480 minutos.';
   }
 
   if (errorNombre.value) {
@@ -97,13 +101,14 @@ async function guardar() {
   const costoNumero = Number(String(costo.value).trim().replace(',', '.'));
   const duracionNumero = Number(String(duracion.value).trim());
 
-  enviando.value = true;
+  cargando.value = true;
 
   try {
     const servicio = await crear({
       nombre: nombreLimpio,
       costo: costoNumero,
       duracionMinutos: duracionNumero,
+      descripcion: descripcion.value.trim(),
     });
 
     emit('creado', servicio);
@@ -114,19 +119,19 @@ async function guardar() {
     const mensaje = excepcion?.response?.data?.message;
 
     if (codigo === 'DUPLICATE') {
-      errorNombre.value = mensaje || 'Ya existe un servicio con ese nombre.';
+      errorNombre.value = mensaje || 'El servicio ya existe.';
       document.getElementById('servicio-nombre')?.focus();
     } else if (codigo === 'FORBIDDEN') {
-      errorGeneral.value = 'No tienes permisos para crear servicios.';
+      mensajeError.value = 'No tienes permisos para crear servicios.';
     } else if (codigo === 'UNAUTHORIZED') {
-      errorGeneral.value = 'Inicia sesión para continuar.';
+      mensajeError.value = 'Inicia sesión para continuar.';
     } else if (codigo === 'VALIDATION_ERROR') {
-      errorGeneral.value = mensaje || 'Revisa los datos del formulario.';
+      mensajeError.value = mensaje || 'Revisa los datos del formulario.';
     } else {
-      errorGeneral.value = mensaje || 'No se pudo crear el servicio. Inténtalo de nuevo.';
+      mensajeError.value = mensaje || 'No se pudo crear el servicio. Inténtalo de nuevo.';
     }
   } finally {
-    enviando.value = false;
+    cargando.value = false;
   }
 }
 </script>
@@ -136,8 +141,8 @@ async function guardar() {
     :open="open"
     title="Crear servicio"
     submit-label="Crear servicio"
-    :loading="enviando"
-    :error="errorGeneral"
+    :loading="cargando"
+    :error="mensajeError"
     @close="cerrar"
     @submit="guardar"
   >
@@ -156,6 +161,17 @@ async function guardar() {
       <p v-if="errorNombre" id="servicio-nombre-error" class="field__error">
         {{ errorNombre }}
       </p>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="servicio-descripcion">Descripción</label>
+      <textarea
+        id="servicio-descripcion"
+        v-model="descripcion"
+        class="textarea"
+        maxlength="1000"
+        placeholder="Detalle opcional del servicio"
+      ></textarea>
     </div>
 
     <div class="field">

@@ -29,10 +29,9 @@ const serviciosActivos = computed(() => servicios.value.length);
 const serviciosFiltrados = computed(() => {
   const termino = busqueda.value.trim().toLocaleLowerCase('es');
 
-  return servicios.value
-    .filter((servicio) => !termino || servicio.nombre.toLocaleLowerCase('es').includes(termino))
-    .slice()
-    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+  return servicios.value.filter(
+    (servicio) => !termino || servicio.nombre.toLocaleLowerCase('es').includes(termino)
+  );
 });
 
 const tituloVacio = computed(() =>
@@ -44,12 +43,6 @@ const descripcionVacia = computed(() =>
     ? 'Prueba con otro nombre o limpia la búsqueda.'
     : 'Crea el primer servicio para que los clientes puedan agendarlo.'
 );
-
-function ordenar(lista) {
-  return lista
-    .slice()
-    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
-}
 
 function formatearCosto(valor) {
   const numero = Number(valor);
@@ -79,7 +72,7 @@ async function cargarServicios() {
 
   try {
     const datos = await listar();
-    servicios.value = ordenar(Array.isArray(datos) ? datos : []);
+    servicios.value = Array.isArray(datos) ? datos : [];
   } catch (excepcion) {
     error.value =
       excepcion?.response?.data?.message || 'No se pudieron cargar los servicios.';
@@ -93,12 +86,10 @@ function abrirModal() {
   modalAbierto.value = true;
 }
 
-function alCrear(servicio) {
-  const sinDuplicados = servicios.value.filter((existente) => existente.id !== servicio.id);
-  servicios.value = ordenar([...sinDuplicados, servicio]);
-  error.value = '';
+async function alCrear() {
   modalAbierto.value = false;
   mensajeExito.value = 'Servicio creado correctamente.';
+  await cargarServicios();
 }
 
 onMounted(cargarServicios);

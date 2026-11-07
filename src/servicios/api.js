@@ -27,6 +27,10 @@ api.interceptors.response.use(
         const actual = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         window.location.assign(`/login?redirect=${encodeURIComponent(actual)}`);
       }
+    } else if (error.response?.status === 403) {
+      if (window.location.pathname !== '/no-autorizado') {
+        window.location.assign('/no-autorizado');
+      }
     }
 
     return Promise.reject(error);
