@@ -6,6 +6,8 @@ import VistaPersonalAdministracion from '../vistas/administracion/VistaPersonalA
 import VistaSalud from '../vistas/cliente/VistaSalud.vue';
 import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
 import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
+import VistaServicios from '../vistas/cliente/VistaServicios.vue';
+import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
 
 const routes = [
   {
@@ -29,13 +31,13 @@ const routes = [
   {
     path: '/servicios',
     name: 'servicios',
-    component: VistaEnConstruccion,
+    component: VistaServicios,
     meta: { layout: 'cliente', title: 'Servicios' },
   },
   {
     path: '/agendar',
     name: 'agendar',
-    component: VistaEnConstruccion,
+    component: VistaAgendar,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Agendar cita' },
   },
   {
