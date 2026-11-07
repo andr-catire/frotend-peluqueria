@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import VistaEnConstruccion from '../vistas/VistaEnConstruccion.vue';
 import VistaServiciosAdministracion from '../vistas/administracion/VistaServiciosAdministracion.vue';
+import VistaPersonalAdministracion from '../vistas/administracion/VistaPersonalAdministracion.vue';
 import VistaSalud from '../vistas/cliente/VistaSalud.vue';
 
 const routes = [
@@ -60,7 +61,7 @@ const routes = [
   {
     path: '/admin/personal',
     name: 'admin-personal',
-    component: VistaEnConstruccion,
+    component: VistaPersonalAdministracion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Personal' },
   },
   {
