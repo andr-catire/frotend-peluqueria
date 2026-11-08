@@ -1,15 +1,25 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
 import { login as loginApi } from '../../servicios/servicioAutenticacion.js';
 
 const router = useRouter();
+const route = useRoute();
 const auth = useAlmacenAutenticacion();
 
 const form = reactive({ email: '', password: '' });
 const cargando = ref(false);
 const error = ref('');
+
+/** Vuelve a la ruta pedida (por ejemplo, el QR de asistencia) solo si es interna. */
+function destinoTrasLogin() {
+  const destino = route.query.redirect;
+  if (typeof destino === 'string' && destino.startsWith('/') && !destino.startsWith('//')) {
+    return destino;
+  }
+  return auth.rutaInicio;
+}
 
 async function iniciarSesion() {
   if (!form.email || !form.password) {
@@ -21,7 +31,7 @@ async function iniciarSesion() {
   try {
     const datos = await loginApi(form.email, form.password);
     auth.login(datos);
-    router.push(auth.rutaInicio);
+    router.push(destinoTrasLogin());
   } catch (e) {
     const mensaje = e?.response?.data?.message || e?.message;
     error.value = mensaje || 'Credenciales incorrectas. Intenta de nuevo.';

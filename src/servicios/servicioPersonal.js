@@ -1,20 +1,20 @@
 import api from './api.js';
-import { buscarEmpleadoMock, promoverEmpleadoMock } from './simulados/personal.js';
+import { listarEmpleadosMock, registrarEmpleadoMock } from './simulados/personal.js';
 
 const USAR_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
-/** Busca una cuenta CLIENTE por correo. La usa VistaPersonalAdministracion. */
-export async function buscarPorEmail(email) {
-  if (USAR_MOCKS) return buscarEmpleadoMock(email);
+/** Lista los estilistas activos. La usa VistaPersonalAdministracion. */
+export async function listar() {
+  if (USAR_MOCKS) return listarEmpleadosMock();
 
-  const { data } = await api.get('/personal/buscar', { params: { email } });
+  const { data } = await api.get('/personal');
   return data;
 }
 
-/** Promueve una cuenta a estilista. La usa VistaPersonalAdministracion. */
-export async function promover(datos) {
-  if (USAR_MOCKS) return promoverEmpleadoMock(datos);
+/** Registra una cuenta de estilista. La usa ModalEstilista. */
+export async function registrar(datos) {
+  if (USAR_MOCKS) return registrarEmpleadoMock(datos);
 
-  const { data } = await api.post('/personal/promover', datos);
+  const { data } = await api.post('/personal', datos);
   return data;
 }

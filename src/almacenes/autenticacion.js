@@ -48,7 +48,7 @@ export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
 
   const rutaInicio = computed(() => {
     if (rol.value === 'PERSONAL') {
-      return { name: 'no-autorizado', query: { motivo: 'personal' } };
+      return { name: 'personal-asistencia' };
     }
     return { name: 'servicios' };
   });

@@ -24,12 +24,10 @@ const items = computed(() => {
   if (auth.rol === 'PERSONAL') {
     return [
       {
-        name: 'no-autorizado',
-        label: 'Mi agenda',
-        icon: 'material-symbols-light:calendar-month',
-        query: { motivo: 'personal' },
+        name: 'personal-asistencia',
+        label: 'Mi asistencia',
+        icon: 'material-symbols-light:schedule',
       },
-      { name: 'admin-asistencia', label: 'Asistencia', icon: 'material-symbols-light:schedule' },
     ];
   }
 

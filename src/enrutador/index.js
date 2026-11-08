@@ -8,6 +8,7 @@ import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
 import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
 import VistaServicios from '../vistas/cliente/VistaServicios.vue';
 import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
+import VistaAsistencia from '../vistas/personal/VistaAsistencia.vue';
 
 const routes = [
   {
@@ -37,13 +38,23 @@ const routes = [
     path: '/agendar',
     name: 'agendar',
     component: VistaAgendar,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Agendar cita' },
+    meta: {
+      layout: 'cliente',
+      requiresAuth: true,
+      roles: ['CLIENTE', 'PERSONAL', 'ADMIN'],
+      title: 'Agendar cita',
+    },
   },
   {
     path: '/visitas',
     name: 'visitas',
     component: VistaEnConstruccion,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Visitas' },
+    meta: {
+      layout: 'cliente',
+      requiresAuth: true,
+      roles: ['CLIENTE', 'PERSONAL', 'ADMIN'],
+      title: 'Visitas',
+    },
   },
   {
     path: '/mis-citas',
@@ -53,7 +64,12 @@ const routes = [
     path: '/perfil',
     name: 'perfil',
     component: VistaEnConstruccion,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Mi perfil' },
+    meta: {
+      layout: 'cliente',
+      requiresAuth: true,
+      roles: ['CLIENTE', 'PERSONAL', 'ADMIN'],
+      title: 'Mi perfil',
+    },
   },
   {
     path: '/admin',
@@ -76,6 +92,12 @@ const routes = [
     name: 'admin-asistencia',
     component: VistaEnConstruccion,
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Asistencia' },
+  },
+  {
+    path: '/personal/asistencia',
+    name: 'personal-asistencia',
+    component: VistaAsistencia,
+    meta: { layout: 'admin', requiresAuth: true, roles: ['PERSONAL'], title: 'Mi asistencia' },
   },
   {
     path: '/no-autorizado',

@@ -1,9 +1,9 @@
 let siguienteId = 4;
 
 export const serviciosMock = [
-  { id: 1, nombre: 'Corte de cabello', costo: 15.0, duracionMinutos: 45, descripcion: null, imagenUrl: null },
-  { id: 2, nombre: 'Coloración', costo: 35.5, duracionMinutos: 90, descripcion: null, imagenUrl: null },
-  { id: 3, nombre: 'Peinado', costo: 12.0, duracionMinutos: 30, descripcion: null, imagenUrl: null },
+  { id: 1, nombre: 'Corte de cabello', precio: 15.0, duracionMinutos: 45, descripcion: null, imagenUrl: null },
+  { id: 2, nombre: 'Coloración', precio: 35.5, duracionMinutos: 90, descripcion: null, imagenUrl: null },
+  { id: 3, nombre: 'Peinado', precio: 12.0, duracionMinutos: 30, descripcion: null, imagenUrl: null },
 ];
 
 function normalizarNombre(nombre) {
@@ -36,7 +36,7 @@ export function agregarServicioMock(datos, imagen = null) {
   const nuevo = {
     id: siguienteId,
     nombre,
-    costo: Number(datos?.costo),
+    precio: Number(datos?.precio),
     duracionMinutos: Number(datos?.duracionMinutos),
     descripcion: normalizarDescripcion(datos?.descripcion),
     imagenUrl: imagen ? URL.createObjectURL(imagen) : null,

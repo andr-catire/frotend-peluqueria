@@ -1,9 +1,7 @@
 import { serviciosMock } from './servicios.js';
 
-const cuentas = [
-  { id: 8, nombre: 'Luis Pérez', email: 'luis@correo.com', rol: 'CLIENTE' },
-  { id: 9, nombre: 'Marta Ríos', email: 'marta@correo.com', rol: 'PERSONAL' },
-];
+let siguienteId = 1;
+const empleados = [];
 
 function error(codigo, mensaje) {
   return {
@@ -13,34 +11,45 @@ function error(codigo, mensaje) {
   };
 }
 
-export async function buscarEmpleadoMock(email) {
-  const correo = String(email ?? '').trim().toLowerCase();
-  const cuenta = cuentas.find((actual) => actual.email === correo);
-
-  if (!cuenta) {
-    throw error('NOT_FOUND', 'No existe una cuenta con ese correo.');
-  }
-
-  if (cuenta.rol !== 'CLIENTE') {
-    throw error('NOT_PROMOTABLE', 'La cuenta ya tiene un rol que no se puede promover a estilista.');
-  }
-
-  return { ...cuenta };
+function normalizarEmail(email) {
+  return String(email ?? '').trim().toLowerCase();
 }
 
-export async function promoverEmpleadoMock(datos) {
-  const cuenta = cuentas.find((actual) => actual.id === datos?.idUsuario);
+function copiarEmpleado(empleado) {
+  return {
+    ...empleado,
+    servicios: empleado.servicios.map((servicio) => ({ ...servicio })),
+  };
+}
 
-  if (!cuenta) {
-    throw error('NOT_FOUND', 'No existe la cuenta que quieres promover.');
+export async function listarEmpleadosMock() {
+  return empleados.filter((empleado) => empleado.activo).map(copiarEmpleado);
+}
+
+export async function registrarEmpleadoMock(datos) {
+  const email = normalizarEmail(datos?.email);
+
+  if (empleados.some((empleado) => empleado.email === email)) {
+    throw error('EMAIL_TAKEN', 'Ya existe una cuenta con ese correo.');
   }
 
-  cuenta.rol = 'PERSONAL';
+  const ids = datos?.serviciosIds ?? [];
+  const servicios = serviciosMock.filter((servicio) => ids.includes(servicio.id));
 
-  return {
-    ...cuenta,
-    servicios: serviciosMock.filter((servicio) =>
-      (datos?.serviciosIds ?? []).includes(servicio.id)
-    ),
+  if (servicios.length !== ids.length) {
+    throw error('NOT_FOUND', 'No existen todos los servicios seleccionados.');
+  }
+
+  const empleado = {
+    id: siguienteId,
+    nombre: String(datos?.nombre ?? '').trim(),
+    email,
+    rol: 'PERSONAL',
+    servicios: servicios.map((servicio) => ({ ...servicio })),
+    activo: true,
   };
+
+  siguienteId += 1;
+  empleados.push(empleado);
+  return copiarEmpleado(empleado);
 }
