@@ -26,6 +26,14 @@ const navItems = computed(() => {
     });
   }
 
+  if (auth.rol === 'PERSONAL') {
+    items.push({
+      name: 'admin-agenda',
+      label: 'Mi agenda',
+      icon: 'material-symbols-light:calendar-month',
+    });
+  }
+
   return items;
 });
 

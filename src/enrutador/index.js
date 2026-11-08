@@ -8,6 +8,8 @@ import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
 import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
 import VistaServicios from '../vistas/cliente/VistaServicios.vue';
 import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
+import VistaVisitas from '../vistas/cliente/VistaVisitas.vue';
+import VistaAgendaAdministracion from '../vistas/administracion/VistaAgendaAdministracion.vue';
 
 const routes = [
   {
@@ -42,7 +44,7 @@ const routes = [
   {
     path: '/visitas',
     name: 'visitas',
-    component: VistaEnConstruccion,
+    component: VistaVisitas,
     meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Visitas' },
   },
   {
@@ -72,10 +74,16 @@ const routes = [
     meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Personal' },
   },
   {
+    path: '/admin/agenda',
+    name: 'admin-agenda',
+    component: VistaAgendaAdministracion,
+    meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN', 'PERSONAL'], title: 'Agenda' },
+  },
+  {
     path: '/admin/asistencia',
     name: 'admin-asistencia',
-    component: VistaEnConstruccion,
-    meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN'], title: 'Asistencia' },
+    component: VistaAgendaAdministracion,
+    meta: { layout: 'admin', requiresAuth: true, roles: ['ADMIN', 'PERSONAL'], title: 'Agenda y Asistencia' },
   },
   {
     path: '/no-autorizado',
