@@ -25,8 +25,7 @@ const routes = [
   {
     path: '/',
     name: 'inicio',
-    component: VistaEnConstruccion,
-    meta: { layout: 'cliente', title: 'Inicio' },
+    redirect: { name: 'servicios' },
   },
   {
     path: '/servicios',
@@ -38,19 +37,23 @@ const routes = [
     path: '/agendar',
     name: 'agendar',
     component: VistaAgendar,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Agendar cita' },
+    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Agendar cita' },
+  },
+  {
+    path: '/visitas',
+    name: 'visitas',
+    component: VistaEnConstruccion,
+    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Visitas' },
   },
   {
     path: '/mis-citas',
-    name: 'mis-citas',
-    component: VistaEnConstruccion,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Mis citas' },
+    redirect: { name: 'visitas' },
   },
   {
     path: '/perfil',
     name: 'perfil',
     component: VistaEnConstruccion,
-    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE'], title: 'Mi perfil' },
+    meta: { layout: 'cliente', requiresAuth: true, roles: ['CLIENTE', 'ADMIN'], title: 'Mi perfil' },
   },
   {
     path: '/admin',

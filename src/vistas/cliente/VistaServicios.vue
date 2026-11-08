@@ -1,122 +1,80 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
+import TarjetaServicio from '../../componentes/TarjetaServicio.vue';
+import EstadoVacio from '../../componentes/EstadoVacio.vue';
 import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
+import { formatearPrecio } from '../../recursos/formato.js';
+import { listar } from '../../servicios/servicioServicios.js';
 
 const router = useRouter();
 const auth = useAlmacenAutenticacion();
+const config = useAlmacenConfiguracion();
 
+const servicios = ref([]);
+const cargando = ref(true);
+const error = ref('');
 const busqueda = ref('');
-const categoriaActiva = ref('todos');
 
-const categorias = [
-  { id: 'todos', label: 'Todos' },
-  { id: 'corte', label: 'Corte' },
-  { id: 'color', label: 'Color' },
-  { id: 'tratamiento', label: 'Tratamiento' },
-  { id: 'estilizado', label: 'Estilizado' },
-];
-
-const servicios = [
-  {
-    id: 1,
-    nombre: 'Corte Clásico',
-    descripcion: 'Corte de cabello con tijera y acabado profesional adaptado a tu tipo de rostro.',
-    precio: 25,
-    duracion: '45 min',
-    categoria: 'corte',
-    icono: 'material-symbols-light:content-cut',
-  },
-  {
-    id: 2,
-    nombre: 'Corte y Peinado',
-    descripcion: 'Corte completo más peinado con secador y productos de acabado.',
-    precio: 40,
-    duracion: '60 min',
-    categoria: 'corte',
-    icono: 'material-symbols-light:content-cut',
-  },
-  {
-    id: 3,
-    nombre: 'Coloración Completa',
-    descripcion: 'Tinte de cabello en color único con materiales de alta calidad y protección del cabello.',
-    precio: 85,
-    duracion: '120 min',
-    categoria: 'color',
-    icono: 'material-symbols-light:palette',
-  },
-  {
-    id: 4,
-    nombre: 'Mechas Balayage',
-    descripcion: 'Técnica de coloración degradada a mano para un efecto natural y luminoso.',
-    precio: 110,
-    duracion: '150 min',
-    categoria: 'color',
-    icono: 'material-symbols-light:palette',
-  },
-  {
-    id: 5,
-    nombre: 'Tratamiento Hidratante',
-    descripcion: 'Mascarilla nutritiva de keratina para restaurar brillo y suavidad en cabello dañado.',
-    precio: 45,
-    duracion: '60 min',
-    categoria: 'tratamiento',
-    icono: 'material-symbols-light:spa',
-  },
-  {
-    id: 6,
-    nombre: 'Keratina Express',
-    descripcion: 'Tratamiento alisador de larga duración que elimina el frizz y aporta suavidad profunda.',
-    precio: 95,
-    duracion: '120 min',
-    categoria: 'tratamiento',
-    icono: 'material-symbols-light:spa',
-  },
-  {
-    id: 7,
-    nombre: 'Peinado de Ocasión',
-    descripcion: 'Peinado para eventos especiales, recogido o suelto según tu preferencia.',
-    precio: 120,
-    duracion: '150 min',
-    categoria: 'estilizado',
-    icono: 'material-symbols-light:face-3',
-  },
-  {
-    id: 8,
-    nombre: 'Barba y Perfil',
-    descripcion: 'Arreglo de barba con navaja, contorno y productos de acabado.',
-    precio: 20,
-    duracion: '30 min',
-    categoria: 'corte',
-    icono: 'material-symbols-light:face',
-  },
-];
+const hayBusqueda = computed(() => busqueda.value.trim().length > 0);
 
 const serviciosFiltrados = computed(() => {
-  return servicios.filter((s) => {
-    const coincideCategoria =
-      categoriaActiva.value === 'todos' || s.categoria === categoriaActiva.value;
-    const coincideBusqueda =
-      !busqueda.value ||
-      s.nombre.toLowerCase().includes(busqueda.value.toLowerCase()) ||
-      s.descripcion.toLowerCase().includes(busqueda.value.toLowerCase());
-    return coincideCategoria && coincideBusqueda;
+  const termino = busqueda.value.trim().toLocaleLowerCase('es');
+
+  if (!termino) return servicios.value;
+
+  return servicios.value.filter((servicio) => {
+    const nombre = servicio.nombre?.toLocaleLowerCase('es') ?? '';
+    const descripcion = servicio.descripcion?.toLocaleLowerCase('es') ?? '';
+    return nombre.includes(termino) || descripcion.includes(termino);
   });
 });
+
+const tituloVacio = computed(() =>
+  hayBusqueda.value ? 'No se encontraron servicios' : 'Aún no hay servicios'
+);
+
+const descripcionVacia = computed(() =>
+  hayBusqueda.value
+    ? 'Prueba con otro término de búsqueda o limpia el filtro.'
+    : 'La peluquería todavía no ha publicado servicios disponibles.'
+);
+
+async function cargarServicios() {
+  cargando.value = true;
+  error.value = '';
+
+  try {
+    const datos = await listar();
+    servicios.value = Array.isArray(datos) ? datos : [];
+  } catch (excepcion) {
+    error.value =
+      excepcion?.response?.data?.message || 'No se pudieron cargar los servicios.';
+  } finally {
+    cargando.value = false;
+  }
+}
+
+function precioDe(servicio) {
+  return formatearPrecio(servicio.precio, config.moneda);
+}
 
 function agendar(servicio) {
   if (!auth.estaAutenticado) {
     router.push({ name: 'login', query: { redirect: '/agendar' } });
     return;
   }
+
   router.push({ name: 'agendar', query: { servicio: servicio.id } });
 }
+
+onMounted(cargarServicios);
 </script>
 
 <template>
   <div class="servicios-vista">
-    <!-- Encabezado de la página (DESIGN §3.1) -->
     <header class="servicios-hero">
       <div class="container servicios-hero__inner">
         <p class="label">Nuestros servicios</p>
@@ -130,7 +88,6 @@ function agendar(servicio) {
     </header>
 
     <div class="container page--tight">
-      <!-- Barra de controles: búsqueda y filtros en píldora (DESIGN §4) -->
       <div class="servicios-controles">
         <div class="field servicios-controles__busqueda">
           <label class="sr-only" for="buscar-servicios-input">Buscar servicio</label>
@@ -145,78 +102,70 @@ function agendar(servicio) {
             />
           </div>
         </div>
-
-        <nav class="servicios-categorias" aria-label="Categorías de servicios">
-          <button
-            v-for="cat in categorias"
-            :key="cat.id"
-            class="chip-cat"
-            :class="{ 'chip-cat--activo': categoriaActiva === cat.id }"
-            type="button"
-            @click="categoriaActiva = cat.id"
-          >
-            {{ cat.label }}
-          </button>
-        </nav>
       </div>
 
-      <!-- Contador de resultados -->
-      <p class="servicios-contador caption">
+      <p v-if="!cargando && !error" class="servicios-contador caption">
         {{ serviciosFiltrados.length }}
         {{ serviciosFiltrados.length === 1 ? 'servicio disponible' : 'servicios disponibles' }}
       </p>
 
-      <!-- Cuadrícula de tarjetas de servicios (DESIGN §3.1 y §3.2) -->
-      <div v-if="serviciosFiltrados.length > 0" class="servicios-grid">
-        <article
+      <div
+        v-if="cargando"
+        class="servicios-grid"
+        aria-busy="true"
+        aria-label="Cargando servicios"
+      >
+        <div v-for="fila in 6" :key="fila" class="servicio-skeleton" aria-hidden="true"></div>
+      </div>
+
+      <div v-else-if="error" class="servicios-error" role="alert">
+        <Icon icon="material-symbols-light:error" class="servicios-error__icon" aria-hidden="true" />
+        <p>{{ error }}</p>
+        <button class="btn btn--outline btn--small" type="button" @click="cargarServicios">
+          Reintentar
+        </button>
+      </div>
+
+      <div v-else-if="serviciosFiltrados.length > 0" class="servicios-grid">
+        <TarjetaServicio
           v-for="servicio in serviciosFiltrados"
           :key="servicio.id"
-          class="card servicio-card"
+          :servicio="servicio"
+          :precio="precioDe(servicio)"
         >
-          <div class="servicio-card__header">
-            <span class="servicio-card__badge">
-              <Icon :icon="servicio.icono" class="servicio-card__icono" aria-hidden="true" />
-              <span class="servicio-card__cat">{{ servicio.categoria }}</span>
-            </span>
-          </div>
-
-          <div class="servicio-card__body">
-            <h2 class="servicio-card__nombre">{{ servicio.nombre }}</h2>
-            <p class="servicio-card__desc">{{ servicio.descripcion }}</p>
-          </div>
-
-          <div class="servicio-card__footer">
-            <div class="servicio-card__meta">
-              <span class="servicio-card__precio">${{ servicio.precio }}</span>
-              <span class="servicio-card__duracion caption">
-                <Icon icon="material-symbols-light:schedule" aria-hidden="true" />
-                {{ servicio.duracion }}
-              </span>
-            </div>
+          <template #actions>
             <button class="btn btn--outline btn--small" type="button" @click="agendar(servicio)">
               Agendar
             </button>
-          </div>
-        </article>
+          </template>
+        </TarjetaServicio>
       </div>
 
-      <!-- Estado vacío (DESIGN §4) -->
-      <div v-else class="servicios-vacio card">
-        <Icon icon="material-symbols-light:search-off" class="servicios-vacio__icon" aria-hidden="true" />
-        <h2 class="servicios-vacio__title">No se encontraron servicios</h2>
-        <p class="caption">Prueba con otro término de búsqueda o selecciona otra categoría.</p>
-        <button class="btn btn--outline btn--small" type="button" @click="busqueda = ''; categoriaActiva = 'todos'">
-          Limpiar filtros
-        </button>
-      </div>
+      <EstadoVacio
+        v-else
+        :title="tituloVacio"
+        :description="descripcionVacia"
+        icon="material-symbols-light:content-cut"
+      >
+        <template #action>
+          <button
+            v-if="hayBusqueda"
+            class="btn btn--outline btn--small"
+            type="button"
+            @click="busqueda = ''"
+          >
+            Limpiar búsqueda
+          </button>
+          <button v-else class="btn btn--outline btn--small" type="button" @click="cargarServicios">
+            Reintentar
+          </button>
+        </template>
+      </EstadoVacio>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* VistaServicios — DESIGN §3.1
-   Editorial claro: fondo casi blanco, tarjetas blancas 16 px, serifa en titulares.
-*/
 .servicios-vista {
   min-height: calc(100vh - var(--topbar-h));
   background: var(--color-fondo);
@@ -258,7 +207,6 @@ function agendar(servicio) {
   margin: 0;
 }
 
-/* ── Controles ── */
 .servicios-controles {
   display: flex;
   flex-wrap: wrap;
@@ -272,7 +220,7 @@ function agendar(servicio) {
 .servicios-controles__busqueda {
   flex: 1;
   min-width: 240px;
-  max-width: 360px;
+  max-width: 420px;
 }
 
 .servicios-busqueda-wrap {
@@ -294,46 +242,10 @@ function agendar(servicio) {
   padding-left: calc(var(--space-3) + 20px + var(--space-2));
 }
 
-/* Categorías en chips de píldora (DESIGN §4) */
-.servicios-categorias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.chip-cat {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  padding: var(--space-2) var(--space-4);
-  border: var(--borde-suave);
-  border-radius: var(--radio-pill);
-  background: var(--color-blanco);
-  color: var(--color-texto-suave);
-  font-family: var(--fuente-texto);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-medium);
-  cursor: pointer;
-  transition: all var(--dur-fast) var(--ease-out);
-}
-
-.chip-cat:hover {
-  background: var(--color-superficie);
-  color: var(--color-marino);
-}
-
-.chip-cat--activo {
-  background: var(--color-superficie);
-  color: var(--color-marino);
-  font-weight: var(--weight-semibold);
-  border-color: var(--color-marino);
-}
-
 .servicios-contador {
   margin-bottom: var(--space-6);
 }
 
-/* ── Cuadrícula de tarjetas ── */
 .servicios-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -341,124 +253,36 @@ function agendar(servicio) {
   margin-bottom: var(--space-12);
 }
 
-.servicio-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-4);
+.servicio-skeleton {
+  min-height: 220px;
   border: var(--borde-suave);
   border-radius: var(--radio-md);
-  background: var(--color-blanco);
-  padding: var(--space-4);
-  transition: border-color var(--dur-fast) var(--ease-out);
-}
-
-.servicio-card:hover {
-  border-color: var(--color-borde-medio);
-}
-
-.servicio-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.servicio-card__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 4px var(--space-2);
-  border-radius: var(--radio-pill);
   background: var(--color-superficie);
-  color: var(--color-marino);
-  font-size: var(--text-caption);
-  font-weight: var(--weight-medium);
 }
 
-.servicio-card__icono {
-  width: 16px;
-  height: 16px;
-}
-
-.servicio-card__cat {
-  text-transform: capitalize;
-}
-
-.servicio-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.servicio-card__nombre {
-  font-family: var(--fuente-texto);
-  font-size: 18px;
-  font-weight: var(--weight-semibold);
-  color: var(--color-marino);
-  line-height: 1.25;
-}
-
-.servicio-card__desc {
-  font-size: var(--text-body);
-  color: var(--color-texto-suave);
-  line-height: 1.5;
-}
-
-.servicio-card__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: var(--space-3);
-  border-top: var(--borde-suave);
-}
-
-.servicio-card__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.servicio-card__precio {
-  font-family: var(--fuente-titulo);
-  font-size: 26px;
-  font-weight: var(--weight-regular);
-  color: var(--color-marino);
-  line-height: 1.1;
-}
-
-.servicio-card__duracion {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.servicio-card__duracion :deep(svg) {
-  width: 14px;
-  height: 14px;
-}
-
-/* ── Estado vacío ── */
-.servicios-vacio {
+.servicios-error {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
   padding: var(--space-12) var(--space-4);
+  border: var(--borde-suave);
+  border-radius: var(--radio-md);
+  background: var(--color-blanco);
   text-align: center;
   margin-bottom: var(--space-12);
 }
 
-.servicios-vacio__icon {
-  width: 48px;
-  height: 48px;
-  color: var(--color-borde-medio);
+.servicios-error__icon {
+  width: 32px;
+  height: 32px;
+  color: var(--color-marino);
 }
 
-.servicios-vacio__title {
-  font-family: var(--fuente-titulo);
-  font-size: 24px;
-  color: var(--color-marino);
+.servicios-error p {
+  color: var(--color-texto-suave);
+  font-size: var(--text-body);
 }
 
 @media (max-width: 768px) {

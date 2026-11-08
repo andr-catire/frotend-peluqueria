@@ -1,10 +1,14 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
+import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
+import { formatearDuracion, formatearPrecio } from '../../recursos/formato.js';
+import { listar } from '../../servicios/servicioServicios.js';
 
 const route = useRoute();
 const router = useRouter();
+const config = useAlmacenConfiguracion();
 
 const paso = ref(1);
 const servicioSeleccionado = ref(null);
@@ -14,16 +18,9 @@ const confirmado = ref(false);
 const cargando = ref(false);
 const busqueda = ref('');
 
-const servicios = [
-  { id: 1, nombre: 'Corte Clásico', precio: 25, duracion: '45 min', icono: 'material-symbols-light:content-cut' },
-  { id: 2, nombre: 'Corte y Peinado', precio: 40, duracion: '60 min', icono: 'material-symbols-light:content-cut' },
-  { id: 3, nombre: 'Coloración Completa', precio: 85, duracion: '120 min', icono: 'material-symbols-light:palette' },
-  { id: 4, nombre: 'Mechas Balayage', precio: 110, duracion: '150 min', icono: 'material-symbols-light:palette' },
-  { id: 5, nombre: 'Tratamiento Hidratante', precio: 45, duracion: '60 min', icono: 'material-symbols-light:spa' },
-  { id: 6, nombre: 'Keratina Express', precio: 95, duracion: '120 min', icono: 'material-symbols-light:spa' },
-  { id: 7, nombre: 'Peinado de Novia', precio: 120, duracion: '150 min', icono: 'material-symbols-light:face-3' },
-  { id: 8, nombre: 'Barba y Perfil', precio: 20, duracion: '30 min', icono: 'material-symbols-light:face' },
-];
+const servicios = ref([]);
+const cargandoServicios = ref(true);
+const errorServicios = ref('');
 
 // Chips en píldora de 44 px (DESIGN §3.1)
 const horarios = [
@@ -42,26 +39,23 @@ const horarios = [
 ];
 
 const hoy = new Date().toISOString().split('T')[0];
+const servicioIdQuery = Number(route.query.servicio) || null;
 
-const servicioIdQuery = Number(route.query.servicio);
-if (servicioIdQuery) {
-  const encontrado = servicios.find((s) => s.id === servicioIdQuery);
-  if (encontrado) {
-    servicioSeleccionado.value = encontrado;
-    paso.value = 2;
-  }
-}
+const hayBusqueda = computed(() => busqueda.value.trim().length > 0);
 
-const serviciosFiltrados = computed(() =>
-  servicios.filter((s) =>
-    !busqueda.value ||
-    s.nombre.toLowerCase().includes(busqueda.value.toLowerCase())
-  )
-);
+const serviciosFiltrados = computed(() => {
+  const termino = busqueda.value.trim().toLocaleLowerCase('es');
+
+  if (!termino) return servicios.value;
+
+  return servicios.value.filter((servicio) =>
+    (servicio.nombre ?? '').toLocaleLowerCase('es').includes(termino)
+  );
+});
 
 const puedeAvanzar = computed(() => {
   if (paso.value === 1) return servicioSeleccionado.value !== null;
-  if (paso.value === 2) return fechaSeleccionada.value && horaSeleccionada.value;
+  if (paso.value === 2) return Boolean(fechaSeleccionada.value && horaSeleccionada.value);
   return false;
 });
 
@@ -71,8 +65,47 @@ const fechaFormateada = computed(() => {
   return d.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 });
 
-function seleccionarServicio(s) {
-  servicioSeleccionado.value = s;
+async function cargarServicios() {
+  cargandoServicios.value = true;
+  errorServicios.value = '';
+
+  try {
+    const datos = await listar();
+    servicios.value = Array.isArray(datos) ? datos : [];
+
+    if (servicioIdQuery) {
+      const encontrado = servicios.value.find((servicio) => servicio.id === servicioIdQuery);
+      if (encontrado) {
+        servicioSeleccionado.value = encontrado;
+        paso.value = 2;
+      }
+    }
+  } catch (excepcion) {
+    errorServicios.value =
+      excepcion?.response?.data?.message || 'No se pudieron cargar los servicios.';
+  } finally {
+    cargandoServicios.value = false;
+  }
+}
+
+function iconoServicio() {
+  return 'material-symbols-light:content-cut';
+}
+
+function metaServicio(servicio) {
+  return `${formatearDuracion(servicio?.duracionMinutos)} · ${formatearPrecio(servicio?.precio, config.moneda)}`;
+}
+
+function duracionServicio(servicio) {
+  return formatearDuracion(servicio?.duracionMinutos);
+}
+
+function totalServicio(servicio) {
+  return formatearPrecio(servicio?.precio, config.moneda);
+}
+
+function seleccionarServicio(servicio) {
+  servicioSeleccionado.value = servicio;
 }
 
 function avanzar() {
@@ -103,6 +136,8 @@ function nuevaCita() {
   confirmado.value = false;
   busqueda.value = '';
 }
+
+onMounted(cargarServicios);
 </script>
 
 <template>
@@ -175,7 +210,34 @@ function nuevaCita() {
             </div>
           </div>
 
-          <div class="agendar-servicios-grid" role="list">
+          <div
+            v-if="cargandoServicios"
+            class="agendar-servicios-grid"
+            aria-busy="true"
+            aria-label="Cargando servicios"
+          >
+            <div
+              v-for="fila in 4"
+              :key="fila"
+              class="agendar-servicio-skeleton"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+          <div v-else-if="errorServicios" class="agendar-estado" role="alert">
+            <p>{{ errorServicios }}</p>
+            <button class="btn btn--outline btn--small" type="button" @click="cargarServicios">
+              Reintentar
+            </button>
+          </div>
+
+          <div v-else-if="!serviciosFiltrados.length" class="agendar-estado">
+            <p>
+              {{ hayBusqueda ? 'No hay servicios que coincidan con la búsqueda.' : 'Aún no hay servicios disponibles.' }}
+            </p>
+          </div>
+
+          <div v-else class="agendar-servicios-grid" role="list">
             <button
               v-for="s in serviciosFiltrados"
               :key="s.id"
@@ -187,11 +249,11 @@ function nuevaCita() {
               :aria-pressed="servicioSeleccionado?.id === s.id"
             >
               <div class="agendar-servicio-item__badge" aria-hidden="true">
-                <Icon :icon="s.icono" />
+                <Icon :icon="iconoServicio(s)" />
               </div>
               <div class="agendar-servicio-item__info">
                 <span class="agendar-servicio-item__nombre">{{ s.nombre }}</span>
-                <span class="caption agendar-servicio-item__meta">{{ s.duracion }} · ${{ s.precio }}</span>
+                <span class="caption agendar-servicio-item__meta">{{ metaServicio(s) }}</span>
               </div>
               <div class="agendar-servicio-item__check" aria-hidden="true">
                 <Icon v-if="servicioSeleccionado?.id === s.id" icon="material-symbols-light:check" />
@@ -204,12 +266,12 @@ function nuevaCita() {
         <section v-if="paso === 2" class="agendar-paso-contenido" aria-label="Paso 2: Seleccionar fecha y hora">
           <div class="card agendar-servicio-resumen">
             <div class="agendar-servicio-item__badge" aria-hidden="true">
-              <Icon :icon="servicioSeleccionado?.icono" />
+              <Icon :icon="iconoServicio(servicioSeleccionado)" />
             </div>
             <div>
               <strong class="agendar-servicio-resumen__nombre">{{ servicioSeleccionado?.nombre }}</strong>
               <p class="caption agendar-servicio-resumen__meta">
-                {{ servicioSeleccionado?.duracion }} · ${{ servicioSeleccionado?.precio }}
+                {{ metaServicio(servicioSeleccionado) }}
               </p>
             </div>
           </div>
@@ -273,12 +335,12 @@ function nuevaCita() {
               </div>
               <div class="agendar-resumen__fila">
                 <dt>Duración estimada</dt>
-                <dd>{{ servicioSeleccionado?.duracion }}</dd>
+                <dd>{{ duracionServicio(servicioSeleccionado) }}</dd>
               </div>
               <div class="divider"></div>
               <div class="agendar-resumen__fila agendar-resumen__fila--total">
                 <dt>Total</dt>
-                <dd class="agendar-resumen__total">${{ servicioSeleccionado?.precio }}</dd>
+                <dd class="agendar-resumen__total">{{ totalServicio(servicioSeleccionado) }}</dd>
               </div>
             </dl>
 
@@ -450,6 +512,28 @@ function nuevaCita() {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.agendar-servicio-skeleton {
+  min-height: 72px;
+  border: var(--borde-suave);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
+}
+
+.agendar-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  border: var(--borde-suave);
+  border-radius: var(--radio-sm);
+  background: var(--color-blanco);
+  color: var(--color-texto-suave);
+  font-size: var(--text-body);
+  text-align: center;
 }
 
 .agendar-servicio-item {

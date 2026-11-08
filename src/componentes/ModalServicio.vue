@@ -17,13 +17,13 @@ const LADO_MAXIMO = 1600;
 
 const nombre = ref('');
 const descripcion = ref('');
-const costo = ref('');
+const precio = ref('');
 const duracion = ref('');
 const inputImagen = ref(null);
 const archivoImagen = ref(null);
 const vistaPrevia = ref('');
 const errorNombre = ref('');
-const errorCosto = ref('');
+const errorPrecio = ref('');
 const errorDuracion = ref('');
 const errorImagen = ref('');
 const mensajeError = ref('');
@@ -47,10 +47,10 @@ function limpiarImagen() {
 function limpiar() {
   nombre.value = '';
   descripcion.value = '';
-  costo.value = '';
+  precio.value = '';
   duracion.value = '';
   errorNombre.value = '';
-  errorCosto.value = '';
+  errorPrecio.value = '';
   errorDuracion.value = '';
   mensajeError.value = '';
   limpiarImagen();
@@ -134,7 +134,7 @@ async function alSeleccionarImagen(evento) {
 
 function validar() {
   errorNombre.value = '';
-  errorCosto.value = '';
+  errorPrecio.value = '';
   errorDuracion.value = '';
   mensajeError.value = '';
 
@@ -146,11 +146,11 @@ function validar() {
     errorNombre.value = 'El nombre no puede tener más de 120 caracteres.';
   }
 
-  const costoTexto = String(costo.value).trim().replace(',', '.');
-  const costoNumero = Number(costoTexto);
+  const precioTexto = String(precio.value).trim().replace(',', '.');
+  const precioNumero = Number(precioTexto);
 
-  if (!/^\d{1,8}(\.\d{1,2})?$/.test(costoTexto) || !Number.isFinite(costoNumero) || costoNumero <= 0) {
-    errorCosto.value = 'El costo debe ser un número mayor que 0, con máximo 2 decimales.';
+  if (!/^\d{1,8}(\.\d{1,2})?$/.test(precioTexto) || !Number.isFinite(precioNumero) || precioNumero <= 0) {
+    errorPrecio.value = 'El precio debe ser un número mayor que 0, con máximo 2 decimales.';
   }
 
   const duracionTexto = String(duracion.value).trim();
@@ -167,8 +167,8 @@ function validar() {
     return false;
   }
 
-  if (errorCosto.value) {
-    document.getElementById('servicio-costo')?.focus();
+  if (errorPrecio.value) {
+    document.getElementById('servicio-precio')?.focus();
     return false;
   }
 
@@ -194,7 +194,7 @@ async function guardar() {
   if (!validar()) return;
 
   const nombreLimpio = nombre.value.trim().replace(/\s+/g, ' ');
-  const costoNumero = Number(String(costo.value).trim().replace(',', '.'));
+  const precioNumero = Number(String(precio.value).trim().replace(',', '.'));
   const duracionNumero = Number(String(duracion.value).trim());
 
   cargando.value = true;
@@ -203,7 +203,7 @@ async function guardar() {
     const descripcionLimpia = descripcion.value.trim();
     const datos = {
       nombre: nombreLimpio,
-      costo: costoNumero,
+      precio: precioNumero,
       duracionMinutos: duracionNumero,
     };
 
@@ -307,25 +307,25 @@ async function guardar() {
     </div>
 
     <div class="field">
-      <label class="field__label" for="servicio-costo">Costo</label>
+      <label class="field__label" for="servicio-precio">Precio</label>
       <input
-        id="servicio-costo"
-        v-model="costo"
+        id="servicio-precio"
+        v-model="precio"
         class="input"
         type="text"
         inputmode="decimal"
         placeholder="25,50"
         autocomplete="off"
-        :aria-invalid="Boolean(errorCosto)"
-        :aria-describedby="errorCosto
-          ? 'servicio-costo-ayuda servicio-costo-error'
-          : 'servicio-costo-ayuda'"
+        :aria-invalid="Boolean(errorPrecio)"
+        :aria-describedby="errorPrecio
+          ? 'servicio-precio-ayuda servicio-precio-error'
+          : 'servicio-precio-ayuda'"
       />
-      <p id="servicio-costo-ayuda" class="field__help">
+      <p id="servicio-precio-ayuda" class="field__help">
         Usa hasta 2 decimales. El pago se realiza en el local.
       </p>
-      <p v-if="errorCosto" id="servicio-costo-error" class="field__error">
-        {{ errorCosto }}
+      <p v-if="errorPrecio" id="servicio-precio-error" class="field__error">
+        {{ errorPrecio }}
       </p>
     </div>
 

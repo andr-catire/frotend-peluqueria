@@ -47,11 +47,10 @@ export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
   );
 
   const rutaInicio = computed(() => {
-    if (rol.value === 'ADMIN') return { name: 'admin-servicios' };
     if (rol.value === 'PERSONAL') {
       return { name: 'no-autorizado', query: { motivo: 'personal' } };
     }
-    return { name: 'inicio' };
+    return { name: 'servicios' };
   });
 
   function guardarSesion() {

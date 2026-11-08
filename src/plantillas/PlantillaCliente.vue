@@ -10,12 +10,26 @@ const router = useRouter();
 const auth = useAlmacenAutenticacion();
 const config = useAlmacenConfiguracion();
 
-const navItems = [
-  { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },
-  { name: 'agendar', label: 'Agendar', icon: 'material-symbols-light:calendar-month' },
-  { name: 'mis-citas', label: 'Mis citas', icon: 'material-symbols-light:event-note' },
-  { name: 'perfil', label: 'Perfil', icon: 'material-symbols-light:person' },
-];
+const navItems = computed(() => {
+  const items = [
+    { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },
+    { name: 'agendar', label: 'Agendar', icon: 'material-symbols-light:calendar-month' },
+    { name: 'visitas', label: 'Visitas', icon: 'material-symbols-light:event-note' },
+    { name: 'perfil', label: 'Perfil', icon: 'material-symbols-light:person' },
+  ];
+
+  if (auth.rol === 'ADMIN') {
+    items.push({
+      name: 'admin-servicios',
+      label: 'Panel de control',
+      icon: 'material-symbols-light:dashboard',
+    });
+  }
+
+  return items;
+});
+
+const mostrarReservar = computed(() => auth.estaAutenticado && auth.rol !== 'ADMIN');
 
 const nombreMarca = computed(() => config.nombre);
 
@@ -33,7 +47,7 @@ function cerrarSesion() {
   <div class="cliente-layout">
     <header class="topbar">
       <div class="topbar__inner">
-        <RouterLink class="brand" :to="{ name: 'inicio' }" aria-label="Ir al inicio">
+        <RouterLink class="brand" :to="{ name: 'servicios' }" aria-label="Ir a servicios">
           <span class="brand__mark" aria-hidden="true">P</span>
           <span class="brand__name">{{ nombreMarca }}</span>
         </RouterLink>
@@ -52,6 +66,13 @@ function cerrarSesion() {
         </nav>
 
         <div class="user">
+          <RouterLink
+            v-if="mostrarReservar"
+            class="btn btn--primary btn--small user__reservar"
+            :to="{ name: 'agendar' }"
+          >
+            Reservar
+          </RouterLink>
           <template v-if="auth.estaAutenticado">
             <span class="user__initials" aria-hidden="true">{{ auth.iniciales }}</span>
             <span class="user__meta">
@@ -73,7 +94,19 @@ function cerrarSesion() {
       <slot />
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación móvil">
+    <RouterLink
+      v-if="mostrarReservar"
+      class="btn btn--primary btn--small reserva-movil"
+      :to="{ name: 'agendar' }"
+    >
+      Reservar cita
+    </RouterLink>
+
+    <nav
+      class="bottom-nav"
+      aria-label="Navegación móvil"
+      :style="{ '--nav-count': navItems.length }"
+    >
       <RouterLink
         v-for="item in navItems"
         :key="item.name"
@@ -172,6 +205,14 @@ function cerrarSesion() {
   margin-left: auto;
 }
 
+.user__reservar {
+  white-space: nowrap;
+}
+
+.reserva-movil {
+  display: none;
+}
+
 .user__initials {
   display: grid;
   width: 40px;
@@ -236,6 +277,19 @@ function cerrarSesion() {
     padding-bottom: 72px;
   }
 
+  .user__reservar {
+    display: none;
+  }
+
+  .reserva-movil {
+    position: fixed;
+    right: var(--space-4);
+    bottom: calc(64px + var(--space-4));
+    z-index: 19;
+    display: inline-flex;
+    box-shadow: none;
+  }
+
   .bottom-nav {
     position: fixed;
     right: 0;
@@ -243,7 +297,7 @@ function cerrarSesion() {
     left: 0;
     z-index: 20;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--nav-count, 4), minmax(0, 1fr));
     border-top: var(--borde-suave);
     background: var(--color-blanco);
   }
@@ -255,10 +309,18 @@ function cerrarSesion() {
     justify-content: center;
     flex-direction: column;
     gap: 2px;
+    padding-inline: 2px;
     color: var(--color-texto-suave);
     font-size: var(--text-caption);
     font-weight: var(--weight-regular);
     text-decoration: none;
+  }
+
+  .bottom-nav__link span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .bottom-nav__link :deep(svg) {

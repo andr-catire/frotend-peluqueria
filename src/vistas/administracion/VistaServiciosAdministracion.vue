@@ -39,7 +39,7 @@ const descripcionVacia = computed(() =>
     : 'Crea el primer servicio para que los clientes puedan agendarlo.'
 );
 
-function formatearCosto(valor) {
+function formatearPrecio(valor) {
   const numero = Number(valor);
 
   if (!Number.isFinite(numero)) return '—';
@@ -102,7 +102,7 @@ onMounted(cargarServicios);
       label="Gestión de servicios"
       title="Catálogo de servicios"
       accent="servicios"
-      subtitle="Crea los servicios que ofrece la peluquería y consulta su costo y duración."
+      subtitle="Crea los servicios que ofrece la peluquería y consulta su precio y duración."
     >
       <template #stats>
         <TarjetaCifra :value="serviciosActivos" label="Servicios activos" />
@@ -151,7 +151,7 @@ onMounted(cargarServicios);
           v-for="servicio in serviciosFiltrados"
           :key="servicio.id"
           :servicio="servicio"
-          :precio="formatearCosto(servicio.costo)"
+          :precio="formatearPrecio(servicio.precio)"
         />
       </div>
 
