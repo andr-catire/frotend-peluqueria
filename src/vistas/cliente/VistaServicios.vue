@@ -20,6 +20,8 @@ const busqueda = ref('');
 
 const hayBusqueda = computed(() => busqueda.value.trim().length > 0);
 
+const puedeAgendar = computed(() => auth.rol !== 'PERSONAL');
+
 const serviciosFiltrados = computed(() => {
   const termino = busqueda.value.trim().toLocaleLowerCase('es');
 
@@ -133,7 +135,7 @@ onMounted(cargarServicios);
           :servicio="servicio"
           :precio="precioDe(servicio)"
         >
-          <template #actions>
+          <template v-if="puedeAgendar" #actions>
             <button class="btn btn--outline btn--small" type="button" @click="agendar(servicio)">
               Agendar
             </button>

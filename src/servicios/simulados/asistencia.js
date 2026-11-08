@@ -1,10 +1,11 @@
 const CLAVE_HORA = 'peluqueria.asistencia.hora';
-const APERTURA = '08:00:00';
-const CIERRE = '18:00:00';
-const TOLERANCIA_MINUTOS = 0;
-const APERTURA_SEGUNDOS = 8 * 3600;
-const CIERRE_SEGUNDOS = 18 * 3600;
 
+let horarioMock = {
+  zona: 'America/Caracas',
+  apertura: '08:00:00',
+  cierre: '18:00:00',
+  toleranciaMinutos: 0,
+};
 let estado = null;
 let ultimoTextoHora = null;
 let anclaHora = null;
@@ -83,12 +84,19 @@ function reiniciarSiCambioElDia(fecha) {
   }
 }
 
+function normalizarHora(texto) {
+  const coincidencia = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(String(texto ?? '').trim());
+  if (!coincidencia) return null;
+  return `${dosDigitos(coincidencia[1])}:${coincidencia[2]}:${coincidencia[3] ?? '00'}`;
+}
+
 function calcularMinutosTarde(fecha) {
+  const apertura = aSegundos(horarioMock.apertura);
   const segundos = fecha.getHours() * 3600 + fecha.getMinutes() * 60 + fecha.getSeconds();
-  const limite = APERTURA_SEGUNDOS + TOLERANCIA_MINUTOS * 60;
+  const limite = apertura + horarioMock.toleranciaMinutos * 60;
 
   if (segundos <= limite) return 0;
-  return Math.floor((segundos - APERTURA_SEGUNDOS) / 60);
+  return Math.floor((segundos - apertura) / 60);
 }
 
 function respuesta() {
@@ -97,27 +105,107 @@ function respuesta() {
   reiniciarSiCambioElDia(fecha);
 
   const segundos = aSegundos(horaTexto(actual));
+  const cierre = aSegundos(horarioMock.cierre);
   const conEntrada = Boolean(estado.horaEntrada);
   const conSalida = Boolean(estado.horaSalida);
 
   return {
     fecha,
     horaActual: horaTexto(actual),
-    horaApertura: APERTURA,
-    horaCierre: CIERRE,
+    horaApertura: horarioMock.apertura,
+    horaCierre: horarioMock.cierre,
     horaEntrada: estado.horaEntrada,
     horaSalida: estado.horaSalida,
     llegoTarde: estado.minutosTarde > 0,
     minutosTarde: estado.minutosTarde,
     salidaAnticipada: estado.salidaAnticipada,
-    puedeRegistrarEntrada: !conEntrada && segundos <= CIERRE_SEGUNDOS,
-    puedeRegistrarSalida: conEntrada && !conSalida && segundos >= CIERRE_SEGUNDOS,
-    salidaHabilitadaDesde: `${fecha}T${CIERRE}`,
+    puedeRegistrarEntrada: !conEntrada && segundos <= cierre,
+    puedeRegistrarSalida: conEntrada && !conSalida && segundos >= cierre,
+    salidaHabilitadaDesde: `${fecha}T${horarioMock.cierre}`,
   };
 }
 
 export async function obtenerHoyMock() {
   return respuesta();
+}
+
+export async function obtenerHorarioMock() {
+  return { ...horarioMock };
+}
+
+export async function actualizarHorarioMock(datos) {
+  const apertura = normalizarHora(datos?.apertura);
+  const cierre = normalizarHora(datos?.cierre);
+
+  if (!apertura || !cierre) {
+    throw error('VALIDATION_ERROR', 'Indica la hora de apertura y la de cierre.');
+  }
+
+  if (aSegundos(apertura) >= aSegundos(cierre)) {
+    throw error(
+      'HORARIO_INVALIDO',
+      'La hora de apertura debe ser anterior a la hora de cierre.'
+    );
+  }
+
+  horarioMock = { ...horarioMock, apertura, cierre };
+  return { ...horarioMock };
+}
+
+export async function listarAsistenciasMock(fecha) {
+  const dia = fecha || fechaTexto(ahora());
+  const hoy = fechaTexto(new Date());
+  const base = [
+    { personalId: 5, nombre: 'Marta Ríos', email: 'marta@correo.com' },
+    { personalId: 6, nombre: 'Luis Pérez', email: 'luis@correo.com' },
+    { personalId: 7, nombre: 'Valeria Morales', email: 'valeria@correo.com' },
+  ];
+
+  if (dia !== hoy) {
+    return base.map((persona) => ({
+      ...persona,
+      horaEntrada: null,
+      horaSalida: null,
+      llegoTarde: false,
+      minutosTarde: 0,
+      salidaAnticipada: false,
+      motivoSalida: null,
+      trabajo: false,
+    }));
+  }
+
+  return [
+    {
+      ...base[0],
+      horaEntrada: '08:00:00',
+      horaSalida: '18:00:00',
+      llegoTarde: false,
+      minutosTarde: 0,
+      salidaAnticipada: false,
+      motivoSalida: null,
+      trabajo: true,
+    },
+    {
+      ...base[1],
+      horaEntrada: '08:18:00',
+      horaSalida: '17:10:00',
+      llegoTarde: true,
+      minutosTarde: 18,
+      salidaAnticipada: true,
+      motivoSalida: 'Cita médica programada',
+      trabajo: true,
+    },
+    {
+      ...base[2],
+      horaEntrada: null,
+      horaSalida: null,
+      llegoTarde: false,
+      minutosTarde: 0,
+      salidaAnticipada: false,
+      motivoSalida: null,
+      trabajo: false,
+    },
+  ];
 }
 
 export async function registrarEntradaMock() {
@@ -129,7 +217,7 @@ export async function registrarEntradaMock() {
     throw error('ENTRADA_YA_REGISTRADA', 'Ya registraste tu entrada de hoy.');
   }
 
-  if (aSegundos(horaTexto(actual)) > CIERRE_SEGUNDOS) {
+  if (aSegundos(horaTexto(actual)) > aSegundos(horarioMock.cierre)) {
     throw error(
       'ENTRADA_FUERA_DE_HORARIO',
       'Ya pasó la hora de cierre del local. No se puede registrar la entrada.'
@@ -154,7 +242,7 @@ export async function registrarSalidaMock(motivo) {
     throw error('SALIDA_YA_REGISTRADA', 'Ya registraste tu salida de hoy.');
   }
 
-  const anticipada = aSegundos(horaTexto(actual)) < CIERRE_SEGUNDOS;
+  const anticipada = aSegundos(horaTexto(actual)) < aSegundos(horarioMock.cierre);
   const motivoLimpio = String(motivo ?? '').trim();
 
   if (anticipada && motivoLimpio.length < 5) {

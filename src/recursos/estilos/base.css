@@ -10,6 +10,36 @@
 
 html {
   font-size: 100%;
+  scroll-behavior: smooth;
+  scrollbar-color: var(--color-borde-medio) transparent;
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: var(--radio-pill);
+  background: var(--color-borde-medio);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-texto-suave);
+  background-clip: padding-box;
 }
 
 body {

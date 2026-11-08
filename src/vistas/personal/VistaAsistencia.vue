@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue';
 import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
 import ModalFormulario from '../../componentes/ModalFormulario.vue';
 import DialogoConfirmacion from '../../componentes/DialogoConfirmacion.vue';
+import { formatearHoras } from '../../recursos/formato.js';
 import {
   obtenerHoy,
   registrarEntrada,
@@ -266,7 +267,7 @@ async function confirmarSalida() {
                   aria-hidden="true"
                 />
                 {{ estado.llegoTarde
-                  ? `Llegaste tarde: ${estado.minutosTarde} min`
+                  ? `Llegaste tarde: ${formatearHoras(estado.minutosTarde)}`
                   : 'Puntual' }}
               </span>
             </template>

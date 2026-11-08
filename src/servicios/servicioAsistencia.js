@@ -1,11 +1,40 @@
 import api from './api.js';
 import {
+  actualizarHorarioMock,
+  listarAsistenciasMock,
+  obtenerHorarioMock,
   obtenerHoyMock,
   registrarEntradaMock,
   registrarSalidaMock,
 } from './simulados/asistencia.js';
 
 const USAR_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
+
+/** Devuelve el horario vigente del local. La usa el panel ADMIN. */
+export async function obtenerHorario() {
+  if (USAR_MOCKS) return obtenerHorarioMock();
+
+  const { data } = await api.get('/asistencia/horario');
+  return data;
+}
+
+/** Actualiza apertura y cierre. Solo ADMIN. */
+export async function actualizarHorario(datos) {
+  if (USAR_MOCKS) return actualizarHorarioMock(datos);
+
+  const { data } = await api.put('/asistencia/horario', datos);
+  return data;
+}
+
+/** Lista la asistencia de todos los estilistas para una fecha. La usa el panel ADMIN. */
+export async function listar(fecha) {
+  if (USAR_MOCKS) return listarAsistenciasMock(fecha);
+
+  const { data } = await api.get('/asistencia', {
+    params: fecha ? { fecha } : {},
+  });
+  return Array.isArray(data) ? data : [];
+}
 
 /** Estado de la jornada de hoy del empleado autenticado. La usa VistaAsistencia. */
 export async function obtenerHoy() {

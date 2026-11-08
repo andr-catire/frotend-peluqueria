@@ -11,6 +11,18 @@ const auth = useAlmacenAutenticacion();
 const config = useAlmacenConfiguracion();
 
 const navItems = computed(() => {
+  if (auth.rol === 'PERSONAL') {
+    return [
+      { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },
+      { name: 'admin-agenda', label: 'Mi agenda', icon: 'material-symbols-light:calendar-month' },
+      {
+        name: 'personal-asistencia',
+        label: 'Entrada y salida',
+        icon: 'material-symbols-light:schedule',
+      },
+    ];
+  }
+
   const items = [
     { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },
     { name: 'agendar', label: 'Agendar', icon: 'material-symbols-light:calendar-month' },
@@ -26,18 +38,10 @@ const navItems = computed(() => {
     });
   }
 
-  if (auth.rol === 'PERSONAL') {
-    items.push({
-      name: 'admin-agenda',
-      label: 'Mi agenda',
-      icon: 'material-symbols-light:calendar-month',
-    });
-  }
-
   return items;
 });
 
-const mostrarReservar = computed(() => auth.estaAutenticado && auth.rol !== 'ADMIN');
+const mostrarReservar = computed(() => auth.rol === 'CLIENTE');
 
 const nombreMarca = computed(() => config.nombre);
 
