@@ -14,6 +14,15 @@ const cargando = ref(false);
 const error = ref('');
 const mostrarPassword = ref(false);
 
+/** Vuelve a la ruta pedida (por ejemplo, el QR de asistencia) solo si es interna. */
+function destinoTrasLogin() {
+  const destino = route.query.redirect;
+  if (typeof destino === 'string' && destino.startsWith('/') && !destino.startsWith('//')) {
+    return destino;
+  }
+  return auth.rutaInicio;
+}
+
 async function iniciarSesion() {
   if (!form.email || !form.password) {
     error.value = 'Por favor completa todos los campos.';
@@ -24,8 +33,7 @@ async function iniciarSesion() {
   try {
     const datos = await loginApi(form.email.trim(), form.password.trim());
     auth.login(datos);
-    const destino = route.query.redirect || auth.rutaInicio;
-    router.push(destino);
+    router.push(destinoTrasLogin());
   } catch (e) {
     if (!e?.response || e.code === 'ERR_NETWORK' || e.message === 'Network Error') {
       error.value = 'No se pudo conectar con el servidor. Verifica que el backend esté iniciado.';

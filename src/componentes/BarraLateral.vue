@@ -24,6 +24,7 @@ const items = computed(() => {
   if (auth.rol === 'PERSONAL') {
     return [
       { name: 'admin-agenda', label: 'Mi agenda', icon: 'material-symbols-light:calendar-month' },
+      { name: 'personal-asistencia', label: 'Mi asistencia', icon: 'material-symbols-light:schedule' },
     ];
   }
 

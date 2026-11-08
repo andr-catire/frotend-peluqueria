@@ -51,7 +51,7 @@ export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
       return { name: 'admin-servicios' };
     }
     if (rol.value === 'PERSONAL') {
-      return { name: 'admin-agenda' };
+      return { name: 'personal-asistencia' };
     }
     return { name: 'servicios' };
   });
