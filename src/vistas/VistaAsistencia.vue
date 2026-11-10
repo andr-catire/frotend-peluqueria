@@ -1,15 +1,15 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Icon } from '@iconify/vue';
-import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
-import ModalFormulario from '../../componentes/ModalFormulario.vue';
-import DialogoConfirmacion from '../../componentes/DialogoConfirmacion.vue';
-import { formatearHoras } from '../../recursos/formato.js';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import ModalFormulario from '../componentes/ModalFormulario.vue';
+import DialogoConfirmacion from '../componentes/DialogoConfirmacion.vue';
+import { formatearHoras } from '../recursos/formato.js';
 import {
   obtenerHoy,
   registrarEntrada,
   registrarSalida,
-} from '../../servicios/servicioAsistencia.js';
+} from '../servicios/servicioAsistencia.js';
 
 const estado = ref(null);
 const cargando = ref(true);

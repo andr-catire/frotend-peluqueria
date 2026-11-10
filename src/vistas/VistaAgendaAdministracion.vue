@@ -1,17 +1,21 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref, watch } from 'vue';
 import { Icon } from '@iconify/vue';
-import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
-import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
-import { formatearPrecio } from '../../recursos/formato.js';
-import { obtenerMisCitas } from '../../servicios/servicioCitas.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
+import { formatearPrecio } from '../recursos/formato.js';
+import { obtenerAgendaSemanal } from '../servicios/servicioCitas.js';
+import api from '../servicios/api.js';
 
-const router = useRouter();
 const auth = useAlmacenAutenticacion();
 const config = useAlmacenConfiguracion();
 
+const esAdmin = computed(() => auth.rol === 'ADMIN');
+const esPersonal = computed(() => auth.rol === 'PERSONAL');
+
 const semanaOffset = ref(0);
+const estilistas = ref([]);
+const estilistaSeleccionado = ref('');
 const citas = ref([]);
 const cargando = ref(true);
 const error = ref('');
@@ -39,9 +43,10 @@ const horasGrilla = [
 function getSemanaLaboral(offset = 0) {
   const d = new Date();
   const day = d.getDay(); // 0 es Domingo, 1 es Lunes ... 6 es Sábado
-  const diffToMonday = day === 0 ? 1 : 1 - day;
+  // Si hoy es domingo (0), la semana laboral de trabajo es la que empieza mañana lunes (+1)
+  const diffToMonday = day === 0 ? 1 : (1 - day);
 
-  const lunes = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diffToMonday + offset * 7);
+  const lunes = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diffToMonday + (offset * 7));
   lunes.setHours(0, 0, 0, 0);
 
   const sabado = new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + 5);
@@ -64,6 +69,7 @@ function getSemanaLaboral(offset = 0) {
 
 const rangoSemana = computed(() => getSemanaLaboral(semanaOffset.value));
 
+// Subtítulo legible: "Del 09 al 14 de Noviembre, 2026"
 const subtituloRango = computed(() => {
   const l = rangoSemana.value.lunesDate;
   const s = rangoSemana.value.sabadoDate;
@@ -99,19 +105,36 @@ const columnasDias = computed(() => {
   return dias;
 });
 
+// Cargar estilistas para filtro de admin
+async function cargarEstilistas() {
+  if (!esAdmin.value) return;
+  try {
+    const { data } = await api.get('/personal/buscar', { params: { email: '' } }).catch(() => ({ data: [] }));
+    estilistas.value = Array.isArray(data) ? data : [];
+  } catch {
+    estilistas.value = [];
+  }
+}
+
+// Cargar citas de la semana
 async function cargarCitas() {
   cargando.value = true;
   error.value = '';
   try {
-    const datos = await obtenerMisCitas();
+    const estilistaId = estilistaSeleccionado.value ? Number(estilistaSeleccionado.value) : null;
+    const datos = await obtenerAgendaSemanal(
+      rangoSemana.value.inicio,
+      rangoSemana.value.fin,
+      estilistaId
+    );
     citas.value = Array.isArray(datos) ? datos : [];
 
-    // Por defecto seleccionar el primer día de la semana o el que ya estaba
+    // Por defecto seleccionar el primer día de la semana o el día que ya estaba
     if (!diaSeleccionadoIso.value || !columnasDias.value.some((d) => d.iso === diaSeleccionadoIso.value)) {
       diaSeleccionadoIso.value = columnasDias.value[0]?.iso || '';
     }
   } catch (e) {
-    error.value = e?.response?.data?.message || 'No se pudieron cargar tus citas.';
+    error.value = e?.response?.data?.message || 'No se pudo cargar la agenda semanal.';
   } finally {
     cargando.value = false;
   }
@@ -131,7 +154,7 @@ function obtenerEstiloCita(cita) {
   return PALETA_COLORES[index];
 }
 
-// Citas en la celda de la grilla
+// Citas organizadas por día y hora para la grilla
 function citasEnSlot(diaIso, horaNum) {
   return citas.value.filter((c) => {
     if (c.fecha !== diaIso) return false;
@@ -158,31 +181,40 @@ function seleccionarDia(iso) {
 
 function irAHoy() {
   semanaOffset.value = 0;
+  cargarCitas();
 }
 
-onMounted(cargarCitas);
+watch([semanaOffset, estilistaSeleccionado], () => {
+  cargarCitas();
+});
+
+onMounted(async () => {
+  await cargarEstilistas();
+  await cargarCitas();
+});
 </script>
 
 <template>
-  <div class="agenda-cliente-container">
-    <!-- Encabezado estilo Referencia -->
+  <div class="agenda-container">
+    <!-- Encabezado de la Agenda estilo Referencia -->
     <header class="agenda-top-header card">
       <div class="header-titulos">
         <h1 class="header-titulo">
-          MI AGENDA DE CITAS - PELUQUERÍA {{ (config.nombre || 'ARMANDEUS').toUpperCase() }}
+          {{ esPersonal ? 'MI AGENDA DE TRABAJO - PELUQUERÍA ' : 'AGENDA SEMANAL - PELUQUERÍA ' }}{{ (config.nombre || 'ARMANDEUS').toUpperCase() }}
         </h1>
         <p class="header-subtitulo">{{ subtituloRango }}</p>
       </div>
 
       <div class="header-acciones">
-        <button
-          class="btn btn--primary btn--sm btn-agendar"
-          type="button"
-          @click="router.push({ name: 'agendar' })"
-        >
-          <Icon icon="material-symbols-light:add-circle" />
-          Agendar nueva cita
-        </button>
+        <!-- Filtro estilista (solo para admin) -->
+        <div v-if="esAdmin && estilistas.length > 0" class="filtro-box">
+          <select v-model="estilistaSeleccionado" class="filtro-select">
+            <option value="">Todos los estilistas</option>
+            <option v-for="est in estilistas" :key="est.id" :value="est.id">
+              {{ est.nombre }}
+            </option>
+          </select>
+        </div>
 
         <!-- Controles de navegación de semana -->
         <div class="btn-group-nav">
@@ -212,10 +244,10 @@ onMounted(cargarCitas);
           </button>
         </div>
 
-        <!-- Badge de Usuario Cliente -->
+        <!-- Badge de Usuario -->
         <div class="usuario-badge">
           <Icon icon="material-symbols-light:account-circle" class="user-icon" />
-          <span class="user-name">Cliente: {{ auth.nombre || 'Mi cuenta' }}</span>
+          <span class="user-name">{{ esPersonal ? 'Estilista: ' : 'Administrador: ' }}{{ auth.nombre || 'Personal' }}</span>
         </div>
       </div>
     </header>
@@ -223,7 +255,7 @@ onMounted(cargarCitas);
     <!-- Estado de Carga / Error -->
     <div v-if="cargando" class="card estado-card">
       <span class="spinner"></span>
-      <p>Cargando tus citas agendadas...</p>
+      <p>Cargando agenda semanal...</p>
     </div>
 
     <div v-else-if="error" class="card estado-card error" role="alert">
@@ -232,7 +264,7 @@ onMounted(cargarCitas);
       <button class="btn btn--secondary btn--sm" type="button" @click="cargarCitas">Reintentar</button>
     </div>
 
-    <!-- Layout: Grilla Semanal + Panel Lateral de Detalle -->
+    <!-- Layout Principal: Grilla Semanal + Panel Lateral de Detalle -->
     <div v-else class="agenda-workspace">
       <!-- 1. Grilla Semanal Horaria -->
       <main class="grid-card card">
@@ -254,10 +286,12 @@ onMounted(cargarCitas);
             </thead>
             <tbody>
               <tr v-for="h in horasGrilla" :key="h.hora" class="tr-hora">
+                <!-- Columna de la hora a la izquierda -->
                 <td class="td-hora-label">
                   <span>{{ h.label }}</span>
                 </td>
 
+                <!-- Celdas de los días -->
                 <td
                   v-for="col in columnasDias"
                   :key="`${col.iso}-${h.hora}`"
@@ -283,7 +317,7 @@ onMounted(cargarCitas);
                     </div>
                     <div class="cita-grid-card__info">
                       <strong>{{ cita.servicioNombre }}</strong>
-                      <span class="cita-estilista-tag"> - {{ cita.estilistaNombre?.split(' ')[0] }}</span>
+                      <span v-if="esAdmin" class="cita-estilista-tag"> - {{ cita.estilistaNombre?.split(' ')[0] }}</span>
                     </div>
                   </div>
                 </td>
@@ -293,7 +327,7 @@ onMounted(cargarCitas);
         </div>
       </main>
 
-      <!-- 2. Panel Lateral: DETALLE DEL DÍA -->
+      <!-- 2. Panel Lateral: DETALLE DEL DÍA (Estilo Referencia) -->
       <aside class="detalle-panel card">
         <header class="detalle-header">
           <h2 class="detalle-titulo">
@@ -303,14 +337,7 @@ onMounted(cargarCitas);
 
         <div v-if="citasDelDiaSeleccionado.length === 0" class="detalle-vacio">
           <Icon icon="material-symbols-light:event-available" class="vacio-icon" />
-          <p>No tienes citas agendadas para este día.</p>
-          <button
-            class="btn btn--secondary btn--sm btn-reservar-slot"
-            type="button"
-            @click="router.push({ name: 'agendar' })"
-          >
-            Reservar turno
-          </button>
+          <p>Sin citas agendadas para este día.</p>
         </div>
 
         <div v-else class="detalle-lista">
@@ -331,12 +358,13 @@ onMounted(cargarCitas);
               <Icon :icon="obtenerEstiloCita(cita).icono" class="detalle-card__icon" />
             </div>
 
-            <p class="detalle-servicio">
-              <strong>Servicio:</strong> {{ cita.servicioNombre }}
+            <p class="detalle-cliente">
+              <strong>Cliente:</strong> {{ cita.clienteNombre || 'Cliente' }}
             </p>
 
-            <p class="detalle-estilista">
-              <strong>Estilista:</strong> {{ cita.estilistaNombre || 'Personal asignado' }}
+            <p class="detalle-servicio">
+              <strong>Servicio:</strong> {{ cita.servicioNombre }}
+              <span v-if="cita.estilistaNombre" class="detalle-estilista"> - {{ cita.estilistaNombre }}</span>
             </p>
 
             <div class="detalle-card__footer">
@@ -351,11 +379,11 @@ onMounted(cargarCitas);
 </template>
 
 <style scoped>
-.agenda-cliente-container {
+.agenda-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
+  padding: 20px 24px;
   max-width: 1560px;
   margin: 0 auto;
 }
@@ -391,16 +419,17 @@ onMounted(cargarCitas);
 .header-acciones {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
-.btn-agendar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  padding: 8px 16px;
+.filtro-select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  color: #334155;
+  background: #f8fafc;
 }
 
 .btn-group-nav {
@@ -483,6 +512,7 @@ onMounted(cargarCitas);
   table-layout: fixed;
 }
 
+/* Encabezados de días */
 .th-hora {
   width: 85px;
   border-bottom: 1px solid #e2e8f0;
@@ -506,6 +536,7 @@ onMounted(cargarCitas);
   background: #f1f5f9;
 }
 
+/* Día activo destacado en azul */
 .th-dia--activo {
   background: #e0f2fe !important;
   color: #0369a1;
@@ -517,6 +548,7 @@ onMounted(cargarCitas);
   letter-spacing: 0.02em;
 }
 
+/* Filas de horas */
 .tr-hora {
   height: 60px;
 }
@@ -548,10 +580,12 @@ onMounted(cargarCitas);
   background: #f8fafc;
 }
 
+/* Columna activa del día tintada en azul suave */
 .td-dia-slot--activo {
   background: #f0f9ff;
 }
 
+/* Tarjeta de cita dentro de la celda de la grilla */
 .cita-grid-card {
   border-radius: 6px;
   border-left-width: 4px;
@@ -591,11 +625,6 @@ onMounted(cargarCitas);
   line-height: 1.2;
 }
 
-.cita-estilista-tag {
-  opacity: 0.85;
-  font-weight: normal;
-}
-
 /* Panel Lateral: Detalle del Día */
 .detalle-panel {
   background: #ffffff;
@@ -630,16 +659,12 @@ onMounted(cargarCitas);
   color: #94a3b8;
   text-align: center;
   font-size: 0.85rem;
-  gap: 12px;
+  gap: 8px;
 }
 
 .vacio-icon {
   font-size: 36px;
   color: #cbd5e1;
-}
-
-.btn-reservar-slot {
-  margin-top: 4px;
 }
 
 .detalle-lista {
@@ -673,8 +698,8 @@ onMounted(cargarCitas);
   opacity: 0.85;
 }
 
-.detalle-servicio,
-.detalle-estilista {
+.detalle-cliente,
+.detalle-servicio {
   margin: 0 0 4px 0;
   font-size: 0.83rem;
   line-height: 1.35;

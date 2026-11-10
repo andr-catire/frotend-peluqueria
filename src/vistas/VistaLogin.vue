@@ -2,8 +2,8 @@
 import { reactive, ref } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
-import { login as loginApi } from '../../servicios/servicioAutenticacion.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { login as loginApi } from '../servicios/servicioAutenticacion.js';
 
 const route = useRoute();
 const router = useRouter();

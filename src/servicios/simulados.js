@@ -1,3 +1,114 @@
+function error(codigo, mensaje) {
+  return {
+    response: {
+      data: { error: codigo, message: mensaje },
+    },
+  };
+}
+
+/* ----------------------------- Configuración ----------------------------- */
+
+export const configuracionMock = Object.freeze({
+  nombrePeluqueria: 'Peluquería',
+  telefono: '',
+  horarioAtencion: '',
+  moneda: '',
+});
+
+/* ------------------------------- Servicios ------------------------------- */
+
+let siguienteIdServicio = 4;
+
+export const serviciosMock = [
+  { id: 1, nombre: 'Corte de cabello', precio: 15.0, duracionMinutos: 45, descripcion: null, imagenUrl: null },
+  { id: 2, nombre: 'Coloración', precio: 35.5, duracionMinutos: 90, descripcion: null, imagenUrl: null },
+  { id: 3, nombre: 'Peinado', precio: 12.0, duracionMinutos: 30, descripcion: null, imagenUrl: null },
+];
+
+function normalizarNombreServicio(nombre) {
+  return String(nombre ?? '').trim().replace(/\s+/g, ' ');
+}
+
+function normalizarDescripcionServicio(descripcion) {
+  const texto = String(descripcion ?? '').trim();
+  return texto || null;
+}
+
+export function agregarServicioMock(datos, imagen = null) {
+  const nombre = normalizarNombreServicio(datos?.nombre);
+  const repetido = serviciosMock.some(
+    (servicio) => normalizarNombreServicio(servicio.nombre).toLocaleLowerCase('es') ===
+      nombre.toLocaleLowerCase('es')
+  );
+
+  if (repetido) {
+    throw error('DUPLICATE', 'Ya existe un servicio con ese nombre.');
+  }
+
+  const nuevo = {
+    id: siguienteIdServicio,
+    nombre,
+    precio: Number(datos?.precio),
+    duracionMinutos: Number(datos?.duracionMinutos),
+    descripcion: normalizarDescripcionServicio(datos?.descripcion),
+    imagenUrl: imagen ? URL.createObjectURL(imagen) : null,
+  };
+
+  siguienteIdServicio += 1;
+  serviciosMock.push(nuevo);
+  return { ...nuevo };
+}
+
+/* -------------------------------- Personal ------------------------------- */
+
+let siguienteIdEmpleado = 1;
+const empleados = [];
+
+function normalizarEmail(email) {
+  return String(email ?? '').trim().toLowerCase();
+}
+
+function copiarEmpleado(empleado) {
+  return {
+    ...empleado,
+    servicios: empleado.servicios.map((servicio) => ({ ...servicio })),
+  };
+}
+
+export async function listarEmpleadosMock() {
+  return empleados.filter((empleado) => empleado.activo).map(copiarEmpleado);
+}
+
+export async function registrarEmpleadoMock(datos) {
+  const email = normalizarEmail(datos?.email);
+
+  if (empleados.some((empleado) => empleado.email === email)) {
+    throw error('EMAIL_TAKEN', 'Ya existe una cuenta con ese correo.');
+  }
+
+  const ids = datos?.serviciosIds ?? [];
+  const servicios = serviciosMock.filter((servicio) => ids.includes(servicio.id));
+
+  if (servicios.length !== ids.length) {
+    throw error('NOT_FOUND', 'No existen todos los servicios seleccionados.');
+  }
+
+  const empleado = {
+    id: siguienteIdEmpleado,
+    nombre: String(datos?.nombre ?? '').trim(),
+    email,
+    rol: 'PERSONAL',
+    servicios: servicios.map((servicio) => ({ ...servicio })),
+    activo: true,
+  };
+
+  siguienteIdEmpleado += 1;
+  empleados.push(empleado);
+  return copiarEmpleado(empleado);
+}
+
+/* ------------------------------- Asistencia ------------------------------ */
+
 const CLAVE_HORA = 'peluqueria.asistencia.hora';
 
 let horarioMock = {
@@ -61,14 +172,6 @@ function ahora() {
 
   if (!anclaHora) return new Date();
   return new Date(anclaHora.getTime() + (Date.now() - arranque));
-}
-
-function error(codigo, mensaje) {
-  return {
-    response: {
-      data: { error: codigo, message: mensaje },
-    },
-  };
 }
 
 function reiniciarSiCambioElDia(fecha) {

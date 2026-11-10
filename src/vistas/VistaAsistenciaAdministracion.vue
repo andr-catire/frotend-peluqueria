@@ -2,16 +2,16 @@
 import { computed, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
-import TarjetaCifra from '../../componentes/TarjetaCifra.vue';
-import TablaDatos from '../../componentes/TablaDatos.vue';
-import ModalFormulario from '../../componentes/ModalFormulario.vue';
-import { formatearHoras } from '../../recursos/formato.js';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import TarjetaCifra from '../componentes/TarjetaCifra.vue';
+import TablaDatos from '../componentes/TablaDatos.vue';
+import ModalFormulario from '../componentes/ModalFormulario.vue';
+import { formatearHoras } from '../recursos/formato.js';
 import {
   actualizarHorario,
   listar,
   obtenerHorario,
-} from '../../servicios/servicioAsistencia.js';
+} from '../servicios/servicioAsistencia.js';
 
 const columnas = [
   { key: 'estilista', label: 'Estilista' },

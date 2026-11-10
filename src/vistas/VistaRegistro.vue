@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { registrar as registrarApi } from '../../servicios/servicioAutenticacion.js';
+import { registrar as registrarApi } from '../servicios/servicioAutenticacion.js';
 
 const form = reactive({
   nombre: '',

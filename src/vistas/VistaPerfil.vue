@@ -1,12 +1,12 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
-import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
-import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import {
   actualizarPerfil,
   cambiarPassword,
   obtenerPerfil,
-} from '../../servicios/servicioPerfil.js';
+} from '../servicios/servicioPerfil.js';
 
 // Mismas reglas de formato que el backend (SolicitudPerfil).
 const REGEX_CEDULA = /^([VEve]-?)?\d{5,9}$/;

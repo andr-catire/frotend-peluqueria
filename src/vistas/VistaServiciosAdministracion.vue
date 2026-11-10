@@ -1,12 +1,12 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
-import TarjetaCifra from '../../componentes/TarjetaCifra.vue';
-import TarjetaServicio from '../../componentes/TarjetaServicio.vue';
-import EstadoVacio from '../../componentes/EstadoVacio.vue';
-import ModalServicio from '../../componentes/ModalServicio.vue';
-import { listar } from '../../servicios/servicioServicios.js';
-import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import TarjetaCifra from '../componentes/TarjetaCifra.vue';
+import TarjetaServicio from '../componentes/TarjetaServicio.vue';
+import EstadoVacio from '../componentes/EstadoVacio.vue';
+import ModalServicio from '../componentes/ModalServicio.vue';
+import { listar } from '../servicios/servicioServicios.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
 
 const config = useAlmacenConfiguracion();
 

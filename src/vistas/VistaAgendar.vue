@@ -2,15 +2,15 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
-import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
-import { formatearDuracion, formatearPrecio } from '../../recursos/formato.js';
-import { listar } from '../../servicios/servicioServicios.js';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
+import { formatearDuracion, formatearPrecio } from '../recursos/formato.js';
+import { listar } from '../servicios/servicioServicios.js';
 import {
   agendarCita,
   obtenerDisponibilidad,
   obtenerEstilistasPorServicio,
-} from '../../servicios/servicioCitas.js';
+} from '../servicios/servicioCitas.js';
 
 const route = useRoute();
 const router = useRouter();

@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import VistaEnConstruccion from '../vistas/VistaEnConstruccion.vue';
-import VistaServiciosAdministracion from '../vistas/administracion/VistaServiciosAdministracion.vue';
-import VistaPersonalAdministracion from '../vistas/administracion/VistaPersonalAdministracion.vue';
-import VistaAsistenciaAdministracion from '../vistas/administracion/VistaAsistenciaAdministracion.vue';
-import VistaSalud from '../vistas/cliente/VistaSalud.vue';
-import VistaPerfil from '../vistas/cliente/VistaPerfil.vue';
-import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
-import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
-import VistaServicios from '../vistas/cliente/VistaServicios.vue';
-import VistaAgendar from '../vistas/cliente/VistaAgendar.vue';
-import VistaVisitas from '../vistas/cliente/VistaVisitas.vue';
-import VistaAgendaAdministracion from '../vistas/administracion/VistaAgendaAdministracion.vue';
-import VistaAsistencia from '../vistas/personal/VistaAsistencia.vue';
+import VistaServiciosAdministracion from '../vistas/VistaServiciosAdministracion.vue';
+import VistaPersonalAdministracion from '../vistas/VistaPersonalAdministracion.vue';
+import VistaAsistenciaAdministracion from '../vistas/VistaAsistenciaAdministracion.vue';
+import VistaSalud from '../vistas/VistaSalud.vue';
+import VistaPerfil from '../vistas/VistaPerfil.vue';
+import VistaLogin from '../vistas/VistaLogin.vue';
+import VistaRegistro from '../vistas/VistaRegistro.vue';
+import VistaServicios from '../vistas/VistaServicios.vue';
+import VistaAgendar from '../vistas/VistaAgendar.vue';
+import VistaVisitas from '../vistas/VistaVisitas.vue';
+import VistaAgendaAdministracion from '../vistas/VistaAgendaAdministracion.vue';
+import VistaAsistencia from '../vistas/VistaAsistencia.vue';
 
 const routes = [
   {

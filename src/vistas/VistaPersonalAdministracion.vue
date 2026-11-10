@@ -1,10 +1,10 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import EncabezadoPagina from '../../componentes/EncabezadoPagina.vue';
-import TarjetaCifra from '../../componentes/TarjetaCifra.vue';
-import TablaDatos from '../../componentes/TablaDatos.vue';
-import ModalEstilista from '../../componentes/ModalEstilista.vue';
-import { listar } from '../../servicios/servicioPersonal.js';
+import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
+import TarjetaCifra from '../componentes/TarjetaCifra.vue';
+import TablaDatos from '../componentes/TablaDatos.vue';
+import ModalEstilista from '../componentes/ModalEstilista.vue';
+import { listar } from '../servicios/servicioPersonal.js';
 
 const empleados = ref([]);
 const cargando = ref(true);

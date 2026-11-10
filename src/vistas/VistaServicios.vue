@@ -2,12 +2,12 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import TarjetaServicio from '../../componentes/TarjetaServicio.vue';
-import EstadoVacio from '../../componentes/EstadoVacio.vue';
-import { useAlmacenAutenticacion } from '../../almacenes/autenticacion.js';
-import { useAlmacenConfiguracion } from '../../almacenes/configuracion.js';
-import { formatearPrecio } from '../../recursos/formato.js';
-import { listar } from '../../servicios/servicioServicios.js';
+import TarjetaServicio from '../componentes/TarjetaServicio.vue';
+import EstadoVacio from '../componentes/EstadoVacio.vue';
+import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
+import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
+import { formatearPrecio } from '../recursos/formato.js';
+import { listar } from '../servicios/servicioServicios.js';
 
 const router = useRouter();
 const auth = useAlmacenAutenticacion();
