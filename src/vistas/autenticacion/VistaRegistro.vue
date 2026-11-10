@@ -32,6 +32,15 @@ async function registrar() {
     error.value = 'Por favor completa todos los campos.';
     return;
   }
+  if (!/^([VEve]-?)?\d{5,9}$/.test(form.cedula.trim())) {
+    error.value = 'La cédula debe tener entre 5 y 9 dígitos (Ej. V-12345678).';
+    return;
+  }
+  if (!/^\+?\d[\d\s()-]{6,19}$/.test(form.telefono.trim())) {
+    error.value =
+      'El teléfono solo puede contener números, espacios, guiones y paréntesis (Ej. 0414-1234567).';
+    return;
+  }
   if (form.password.length < 8) {
     error.value = 'La contraseña debe tener al menos 8 caracteres.';
     return;

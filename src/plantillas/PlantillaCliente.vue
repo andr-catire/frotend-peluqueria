@@ -27,8 +27,11 @@ const navItems = computed(() => {
     { name: 'servicios', label: 'Servicios', icon: 'material-symbols-light:content-cut' },
     { name: 'agendar', label: 'Agendar', icon: 'material-symbols-light:calendar-month' },
     { name: 'visitas', label: 'Visitas', icon: 'material-symbols-light:event-note' },
-    { name: 'perfil', label: 'Perfil', icon: 'material-symbols-light:person' },
   ];
+
+  if (auth.rol === 'CLIENTE') {
+    items.push({ name: 'perfil', label: 'Perfil', icon: 'material-symbols-light:person' });
+  }
 
   if (auth.rol === 'ADMIN') {
     items.push({

@@ -5,6 +5,7 @@ import VistaServiciosAdministracion from '../vistas/administracion/VistaServicio
 import VistaPersonalAdministracion from '../vistas/administracion/VistaPersonalAdministracion.vue';
 import VistaAsistenciaAdministracion from '../vistas/administracion/VistaAsistenciaAdministracion.vue';
 import VistaSalud from '../vistas/cliente/VistaSalud.vue';
+import VistaPerfil from '../vistas/cliente/VistaPerfil.vue';
 import VistaLogin from '../vistas/autenticacion/VistaLogin.vue';
 import VistaRegistro from '../vistas/autenticacion/VistaRegistro.vue';
 import VistaServicios from '../vistas/cliente/VistaServicios.vue';
@@ -66,11 +67,11 @@ const routes = [
   {
     path: '/perfil',
     name: 'perfil',
-    component: VistaEnConstruccion,
+    component: VistaPerfil,
     meta: {
       layout: 'cliente',
       requiresAuth: true,
-      roles: ['CLIENTE', 'ADMIN'],
+      roles: ['CLIENTE'],
       title: 'Mi perfil',
     },
   },

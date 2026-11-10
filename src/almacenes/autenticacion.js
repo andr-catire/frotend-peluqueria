@@ -78,6 +78,12 @@ export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
     guardarSesion();
   }
 
+  /** Actualiza el nombre de la sesión tras editar el perfil. La usa VistaPerfil. */
+  function actualizarNombre(nuevoNombre) {
+    nombre.value = nuevoNombre ?? '';
+    guardarSesion();
+  }
+
   function logout() {
     token.value = '';
     rol.value = '';
@@ -100,5 +106,6 @@ export const useAlmacenAutenticacion = defineStore('autenticacion', () => {
     rutaInicio,
     login,
     logout,
+    actualizarNombre,
   };
 });
