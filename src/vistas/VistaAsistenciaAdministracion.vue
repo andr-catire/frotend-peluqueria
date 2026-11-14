@@ -6,7 +6,7 @@ import EncabezadoPagina from '../componentes/EncabezadoPagina.vue';
 import TarjetaCifra from '../componentes/TarjetaCifra.vue';
 import TablaDatos from '../componentes/TablaDatos.vue';
 import ModalFormulario from '../componentes/ModalFormulario.vue';
-import { formatearHoras } from '../recursos/formato.js';
+import { fechaHoyCaracas, formatearHoras } from '../recursos/formato.js';
 import {
   actualizarHorario,
   listar,
@@ -20,14 +20,7 @@ const columnas = [
   { key: 'observacion', label: 'Observación' },
 ];
 
-function fechaISO(fecha = new Date()) {
-  const anio = fecha.getFullYear();
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  return `${anio}-${mes}-${dia}`;
-}
-
-const hoy = fechaISO();
+const hoy = fechaHoyCaracas();
 const fecha = ref(hoy);
 const filas = ref([]);
 const cargando = ref(true);

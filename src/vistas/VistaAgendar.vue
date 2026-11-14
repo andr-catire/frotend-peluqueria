@@ -4,7 +4,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
-import { formatearDuracion, formatearPrecio } from '../recursos/formato.js';
+import {
+  fechaHoyCaracas,
+  fechaIso,
+  formatearDuracion,
+  formatearPrecio,
+  hoyEnCaracas,
+} from '../recursos/formato.js';
 import { listar } from '../servicios/servicioServicios.js';
 import {
   agendarCita,
@@ -40,7 +46,7 @@ const citaConfirmada = ref(null);
 // Fechas disponibles: hasta 7 días a partir de hoy, excluyendo domingos
 const fechasDisponibles = computed(() => {
   const lista = [];
-  const hoy = new Date();
+  const hoy = hoyEnCaracas();
 
   for (let i = 0; i < 7; i++) {
     const dia = new Date(hoy);
@@ -49,7 +55,7 @@ const fechasDisponibles = computed(() => {
     // Si es domingo (0), la peluquería está cerrada
     if (dia.getDay() === 0) continue;
 
-    const iso = dia.toISOString().split('T')[0];
+    const iso = fechaIso(dia);
     const nombreDia = dia.toLocaleDateString('es-VE', { weekday: 'short' });
     const numeroDia = dia.getDate();
     const nombreMes = dia.toLocaleDateString('es-VE', { month: 'short' });
@@ -178,7 +184,7 @@ async function confirmarCita() {
     return;
   }
 
-  const hoyStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+  const hoyStr = fechaHoyCaracas();
   if (fechaSeleccionada.value < hoyStr) {
     errorConfirmacion.value = 'No puedes agendar en fechas pasadas.';
     return;

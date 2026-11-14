@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useAlmacenAutenticacion } from '../almacenes/autenticacion.js';
 import { useAlmacenConfiguracion } from '../almacenes/configuracion.js';
-import { formatearPrecio } from '../recursos/formato.js';
+import { fechaIso, formatearPrecio, hoyEnCaracas } from '../recursos/formato.js';
 import { obtenerAgendaSemanal } from '../servicios/servicioCitas.js';
 import api from '../servicios/api.js';
 
@@ -41,7 +41,7 @@ const horasGrilla = [
 
 // Cálculo correcto de la semana laboral (Lunes a Sábado)
 function getSemanaLaboral(offset = 0) {
-  const d = new Date();
+  const d = hoyEnCaracas();
   const day = d.getDay(); // 0 es Domingo, 1 es Lunes ... 6 es Sábado
   // Si hoy es domingo (0), la semana laboral de trabajo es la que empieza mañana lunes (+1)
   const diffToMonday = day === 0 ? 1 : (1 - day);
@@ -52,16 +52,9 @@ function getSemanaLaboral(offset = 0) {
   const sabado = new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + 5);
   sabado.setHours(23, 59, 59, 999);
 
-  const formatoIso = (fecha) => {
-    const y = fecha.getFullYear();
-    const m = String(fecha.getMonth() + 1).padStart(2, '0');
-    const diaNum = String(fecha.getDate()).padStart(2, '0');
-    return `${y}-${m}-${diaNum}`;
-  };
-
   return {
-    inicio: formatoIso(lunes),
-    fin: formatoIso(sabado),
+    inicio: fechaIso(lunes),
+    fin: fechaIso(sabado),
     lunesDate: lunes,
     sabadoDate: sabado,
   };
@@ -90,10 +83,8 @@ const columnasDias = computed(() => {
 
   for (let i = 0; i < 6; i++) {
     const fecha = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i);
-    const y = fecha.getFullYear();
-    const m = String(fecha.getMonth() + 1).padStart(2, '0');
     const diaNum = String(fecha.getDate()).padStart(2, '0');
-    const iso = `${y}-${m}-${diaNum}`;
+    const iso = fechaIso(fecha);
 
     dias.push({
       iso,
